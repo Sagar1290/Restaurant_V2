@@ -1,6 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import { loginUser } from './api/login.js'
+import { loginUser, otpLogin } from './api/login.js'
 
 dotenv.config()
 
@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
-app.post('/login', async (req, res) => {
+app.post('/login-user', async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -27,6 +27,25 @@ app.post('/login', async (req, res) => {
         res.json({
             message: 'User logged in successfully!',
             user: result.user
+        });
+    } else {
+        res.status(401).json({ message: result.message });
+    }
+})
+
+app.post('/login-otp', async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ message: 'email is required' });
+    }
+
+    const result = await otpLogin(email);
+
+    if (result.success) {
+        res.json({
+            message: 'OTP generated successfully!',
+            user: result.otp
         });
     } else {
         res.status(401).json({ message: result.message });
