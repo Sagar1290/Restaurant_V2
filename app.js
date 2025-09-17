@@ -1,57 +1,86 @@
-import express from 'express'
-import dotenv from 'dotenv'
-import { loginUser, otpLogin } from './api/login.js'
+import express from "express";
+import dotenv from "dotenv";
+import cors from 'cors'
+import { loginUser, otpLogin, verifyOtp } from "./api/login.js";
 
-dotenv.config()
+// import { setupDatabase } from './database.js'
 
-const app = express()
-const port = 3000
+dotenv.config();
 
-app.use(express.static('./frontend/dist'))
-app.use(express.json())
+const app = express();
+const port = 3000;
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+app.use(express.static("./frontend/dist"));
+app.use(express.json());
+app.use(cors())
 
-app.post('/login-user', async (req, res) => {
-    const { email, password } = req.body;
+// setupDatabase().catch(err => {
+//   console.error("Database setup failed:", err);
+// });
 
-    if (!email || !password) {
-        return res.status(400).json({ message: 'email and password required' });
-    }
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 
-    const result = await loginUser(email, password);
+app.post("/login-user", async (req, res) => {
+  const { email, password } = req.body;
 
-    if (result.success) {
-        res.json({
-            message: 'User logged in successfully!',
-            user: result.user
-        });
-    } else {
-        res.status(401).json({ message: result.message });
-    }
-})
+  if (!email || !password) {
+    return res.status(400).json({ message: "email and password required" });
+  }
 
-app.post('/login-otp', async (req, res) => {
-    const { email } = req.body;
+  const result = await loginUser(email, password);
 
-    if (!email) {
-        return res.status(400).json({ message: 'email is required' });
-    }
+  if (result.success) {
+    res.json({
+      success: true,
+      message: "User logged in successfully!",
+      user: result.user,
+    });
+  } else {
+    res.status(401).json({ success: false, message: result.message });
+  }
+});
 
-    const result = await otpLogin(email);
+app.post("/login-otp", async (req, res) => {
+  const { email } = req.body;
 
-    if (result.success) {
-        res.json({
-            message: 'OTP generated successfully!',
-            user: result.otp
-        });
-    } else {
-        res.status(401).json({ message: result.message });
-    }
-})
+  if (!email) {
+    return res.status(400).json({ message: "email is required" });
+  }
+
+  const result = await otpLogin(email);
+
+  if (result.success) {
+    res.json({
+      success: true,
+      message: result.message,
+    });
+  } else {
+    res.status(401).json({ success: false, message: result.message });
+  }
+});
+
+app.post("/verify-otp", async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res.status(400).json({ message: "email and OTP is required" });
+  }
+
+  const result = await verifyOtp(email, otp);
+
+  if (result.success) {
+    res.json({
+      success: true,
+      message: "OTP Verified successfully!",
+      user: result.user,
+    });
+  } else {
+    res.status(401).json({ success: false, message: result.message });
+  }
+});
 
 app.listen(port, () => {
-    console.log(`Restaurant app listening on port ${port}`)
-})
+  console.log(`Restaurant app listening on port ${port}`);
+});

@@ -20,8 +20,17 @@ export async function loginUser(email, password) {
 }
 
 export async function otpLogin(email) {
-  const random_otp = (Math.random() * 10000).toFixed(0)
   try {
+    const db = await initDatabase();
+    const random_otp = Math.floor(1000 + Math.random() * 9000).toString();
+
+    const expireAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+    await db.run(
+      `INSERT INTO UserOTP (email, otp, expireAt) VALUES (?, ?, ?)`,
+      [email, random_otp, expireAt]
+    );
+    await db.close();
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
       secure: false,
@@ -31,35 +40,57 @@ export async function otpLogin(email) {
       },
     });
 
-    transporter
-      .sendMail({
-        from: process.env.GMAIL_USER,
-        to: "dev.sagar1290@gmail.com",
-        subject: "Hello from tests ✔",
-        text: "This message was sent from a Node.js integration test.",
-      })
-      .then((info) => {
-        console.log("Message sent: %s", info.messageId);
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-      })
-      .catch(console.error);
-    return { success: true, otp: random_otp }
+    await transporter.sendMail({
+      from: process.env.GMAIL_USER,
+      to: email,
+      subject: "Your OTP Code",
+      text: `Your OTP is ${random_otp}. It will expire in 5 minutes.`,
+    });
+
+    return { success: true, message: "OTP sent to email" };
   } catch (error) {
-    return { success: false, message: "Server Error" }
+    console.error("OTP Login error:", error);
+    return { success: false, message: "Server Error" };
   }
 }
 
 export async function verifyOtp(email, otp) {
   try {
-    const result = await client.query(`SELECT * from UserOTP where email = '${email}'`)
+    const db = await initDatabase();
 
-    if (result.rows.length === 1) {
-      return { success: true, user: result.rows[0] };
-    } else {
+    const record = await db.get(
+      `SELECT * FROM UserOTP WHERE email = ? AND otp = ? ORDER BY id DESC LIMIT 1`,
+      [email, otp]
+    );
+
+    if (!record) {
+      await db.close();
       return { success: false, message: "Invalid OTP" };
     }
-  } catch (error) {
-    return { success: false, message: "Server Error" }
-  }
 
+    const now = new Date();
+    const expiry = new Date(record.expireAt);
+
+    if (now > expiry) {
+      await db.close();
+      return { success: false, message: "OTP expired" };
+    }
+
+    await db.run(
+      `INSERT OR IGNORE INTO UserDetails (email)
+         VALUES (?)`,
+      [email]
+    );
+
+    const userResult = await db.get(
+      "SELECT * FROM UserDetails WHERE email = ?",
+      [email]
+    );
+
+    await db.close();
+    return { success: true, user: userResult };
+  } catch (error) {
+    console.log(error);
+    return { success: false, message: "Server Error" };
+  }
 }
