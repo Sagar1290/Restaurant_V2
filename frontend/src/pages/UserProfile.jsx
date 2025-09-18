@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   User,
   Mail,
@@ -9,50 +9,40 @@ import {
   Camera,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { AuthContext } from "../Contexts";
 
 export default function UserProfile() {
-  const initialProfile = {
-    email: "",
-    fullname: "",
-    password: "",
-    confirmPassword: "",
-    phone: "",
-    address: "",
-    profile_photo: "",
-    user_role: "customer",
-    birthdate: "",
-    preferences: "{}",
-  };
+  const { user, setUser } = useContext(AuthContext);
 
-  const [profile, setProfile] = useState(initialProfile);
+  const [profile, setProfile] = useState(user);
   const [previewPhoto, setPreviewPhoto] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        // Replace with your API call here to get user details
-        const userData = await fetch("/api/user/profile").then((res) =>
-          res.json()
-        );
+  // useEffect(() => {
+  //   async function fetchUser() {
+  //     try {
+  //       // Replace with your API call here to get user details
+  //       const userData = await fetch("/api/user/profile").then((res) =>
+  //         res.json()
+  //       );
 
-        setProfile({
-          ...userData,
-          password: "",
-          confirmPassword: "",
-          preferences: JSON.stringify(userData.preferences ?? {}),
-        });
-        if (userData.profile_photo) setPreviewPhoto(userData.profile_photo);
-      } catch {
-        // Handle fetch error
-        toast.error("Failed to load profile");
-        console.error("Failed to load user profile");
-      }
-    }
-    fetchUser();
-  }, []);
+  //       setProfile({
+  //         ...userData,
+  //         password: "",
+  //         confirmPassword: "",
+  //         preferences: JSON.stringify(userData.preferences ?? {}),
+  //       });
+  //       if (userData.profile_photo) setPreviewPhoto(userData.profile_photo);
+  //     } catch {
+  //       // Handle fetch error
+  //       toast.error("Failed to load profile");
+  //       console.error("Failed to load user profile");
+  //     }
+  //   }
+  //   fetchUser();
+  // }, []);
 
   function validate() {
     const newErrors = {};

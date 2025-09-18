@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Key } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import "react-toastify/dist/ReactToastify.css";
+import { AuthContext } from "../Contexts";
 
 const API_BASE = "http://localhost:3000";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext);
 
   const [loginWithOtp, setLoginWithOtp] = useState(false);
   const [email, setEmail] = useState("");
@@ -26,6 +28,7 @@ export default function Login() {
       const data = await res.json();
       if (res.ok) {
         toast.success("Login successful!");
+        setUser(data.user);
         navigate("/");
       } else {
         toast.error(data.message || "Login failed");
@@ -89,6 +92,7 @@ export default function Login() {
       const data = await res.json();
       if (res.ok) {
         toast.success("OTP verified, login successful!");
+        setUser(data.user);
         navigate("/");
       } else {
         toast.error(data.message || "Invalid OTP");
