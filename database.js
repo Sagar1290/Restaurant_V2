@@ -1,44 +1,48 @@
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
-import path  from 'path';
+import path from 'path';
 let db;
 
 export async function initDatabase() {
-    db = await open({
-        filename: path.resolve(process.cwd(), 'restaurant.db'),
-        driver: sqlite3.Database
-    });
+  db = await open({
+    filename: path.resolve(process.cwd(), 'restaurant.db'),
+    driver: sqlite3.Database
+  });
 
-    console.log('Connected to SQLite database');
+  console.log('Connected to SQLite database');
 
-    return db;
+  return db;
 }
 
 export async function setupDatabase() {
-    // Open (or create) the database file restaurant.db in project root folder
-    const db = await open({
-        filename: path.resolve(process.cwd(), 'restaurant.db'),
-        driver: sqlite3.Database
-    });
+  // Open (or create) the database file restaurant.db in project root folder
+  const db = await open({
+    filename: path.resolve(process.cwd(), 'restaurant.db'),
+    driver: sqlite3.Database
+  });
 
-    // Create UserDetails table
-    await db.exec(`
+  // Create UserDetails table
+  await db.exec(`
     CREATE TABLE IF NOT EXISTS UserDetails (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       email TEXT UNIQUE NOT NULL,
       fullname TEXT,
-      password TEXT,
+      password TEXT NOT NULL,
       phone TEXT,
       address TEXT,
       profile_photo TEXT,
-      user_role TEXT DEFAULT 'customer',
+      user_role TEXT DEFAULT 'customer', -- customer / admin / staff
+      preferences TEXT, -- JSON: {"vegOnly": true, "allergies": "peanuts"}
+      loyalty_points INTEGER DEFAULT 0,
+      date_of_birth DATE,
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
   `);
 
-    // Create UserOTP table
-    await db.exec(`
+  // Create UserOTP table
+  await db.exec(`
     CREATE TABLE IF NOT EXISTS UserOTP (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       email TEXT NOT NULL,
@@ -49,23 +53,23 @@ export async function setupDatabase() {
     );
   `);
 
-    // Insert dummy users
-    await db.run(`
-    INSERT OR IGNORE INTO UserDetails (email, fullname, password, phone, address, profile_photo, user_role)
+  // Insert dummy users
+  await db.run(`
+    INSERT OR IGNORE INTO UserDetails (email, fullname, password, phone, address, profile_photo, user_role, preferences, loyalty_points, date_of_birth)
     VALUES
-      ('alice@example.com', 'Alice Sharma', 'alicepass', '9876543210', '12 Main St, Bengaluru', '', 'customer'),
-      ('bob@example.com', 'Bob Singh', 'bobpass', '9999999999', '44 Baker Rd, Mumbai', '', 'manager'),
-      ('chef@gmail.com', 'Chef Lee', 'chefpass', '8888888888', 'Kitchen Ave, Chennai', '', 'chef');
+      ('alice@example.com', 'Alice Sharma', 'alicepass', '9876543210', '12 Main St, Bengaluru', '', 'customer', '{"vegOnly": true, "allergies": "peanuts"}', 0, '1990-05-15'),
+      ('bob@example.com', 'Bob Singh', 'bobpass', '9999999999', '44 Baker Rd, Mumbai', '', 'manager', '{"vegOnly": false, "allergies": ""}', 0, '1985-08-20'),
+      ('chef@gmail.com', 'Chef Lee', 'chefpass', '8888888888', 'Kitchen Ave, Chennai', '', 'chef', '{"vegOnly": false, "allergies": "gluten"}', 0, '1980-03-25');
   `);
 
-    // Insert dummy OTP
-    await db.run(`
+  // Insert dummy OTP
+  await db.run(`
     INSERT INTO UserOTP (email, otp, expireAt)
     VALUES
       ('alice@example.com', '123456', DATETIME('now', '+5 minutes')),
       ('bob@example.com', '654321', DATETIME('now', '+5 minutes'));
   `);
 
-    await db.close();
-    console.log('SQLite database setup completed.');
+  await db.close();
+  console.log('SQLite database setup completed.');
 }
