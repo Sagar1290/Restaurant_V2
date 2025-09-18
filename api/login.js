@@ -1,5 +1,6 @@
 import { initDatabase } from "../database.js";
 import nodemailer from "nodemailer";
+import jwt from "jsonwebtoken";
 
 export async function loginUser(email, password) {
   try {
@@ -9,7 +10,13 @@ export async function loginUser(email, password) {
     await db.close();
 
     if (user) {
-      return { success: true, user };
+      const JWT_SECRET = process.env.JWT_SECRET;
+      const jwt_payload = {
+        email: user.email,
+        fullname: user.fullname,
+      };
+      const token = jwt.sign(jwt_payload, JWT_SECRET);
+      return { success: true, user, token };
     } else {
       return { success: false, message: "Invalid credentials" };
     }
@@ -76,19 +83,30 @@ export async function verifyOtp(email, otp) {
       return { success: false, message: "OTP expired" };
     }
 
+    const profile_photo = `https://avatar.iran.liara.run/public/${(
+      Math.random() * 100
+    ).toFixed(0)}`;
+
     await db.run(
-      `INSERT OR IGNORE INTO UserDetails (email)
-         VALUES (?)`,
-      [email]
+      `INSERT OR IGNORE INTO UserDetails (email, profile_photo)
+         VALUES (?, ?)`,
+      [email, profile_photo]
     );
 
     const userResult = await db.get(
       "SELECT * FROM UserDetails WHERE email = ?",
       [email]
     );
-
     await db.close();
-    return { success: true, user: userResult };
+
+    const JWT_SECRET = process.env.JWT_SECRET;
+    const jwt_payload = {
+      email: userResult.email,
+      fullname: userResult.fullname,
+    };
+    const token = jwt.sign(jwt_payload, JWT_SECRET);
+
+    return { success: true, user: userResult, token };
   } catch (error) {
     console.log(error);
     return { success: false, message: "Server Error" };

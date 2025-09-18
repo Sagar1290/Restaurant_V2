@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import {
   User,
   Mail,
@@ -8,50 +8,30 @@ import {
   Calendar,
   Camera,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { AuthContext } from "../Contexts";
+import _ from "lodash";
+
+const API_BASE = "http://localhost:3000";
 
 export default function UserProfile() {
   const { user, setUser } = useContext(AuthContext);
 
   const [profile, setProfile] = useState(user);
+  const [originalProfile, setOriginalProfile] = useState(user);
   const [previewPhoto, setPreviewPhoto] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
-  // useEffect(() => {
-  //   async function fetchUser() {
-  //     try {
-  //       // Replace with your API call here to get user details
-  //       const userData = await fetch("/api/user/profile").then((res) =>
-  //         res.json()
-  //       );
-
-  //       setProfile({
-  //         ...userData,
-  //         password: "",
-  //         confirmPassword: "",
-  //         preferences: JSON.stringify(userData.preferences ?? {}),
-  //       });
-  //       if (userData.profile_photo) setPreviewPhoto(userData.profile_photo);
-  //     } catch {
-  //       // Handle fetch error
-  //       toast.error("Failed to load profile");
-  //       console.error("Failed to load user profile");
-  //     }
-  //   }
-  //   fetchUser();
-  // }, []);
-
   function validate() {
     const newErrors = {};
-    if (!profile.fullname.trim()) newErrors.fullname = "Full name is required";
+    if (!profile?.fullname.trim()) newErrors.fullname = "Full name is required";
     if (profile.password && profile.password.length < 6)
       newErrors.password = "Password must be at least 6 characters";
     if (profile.password !== profile.confirmPassword)
       newErrors.confirmPassword = "Passwords do not match";
-    if (!profile.phone.match(/^\+?[\d\s\-]{7,15}$/))
+    if (!profile?.phone?.match(/^\+?[\d\s\-]{7,15}$/))
       newErrors.phone = "Enter a valid phone number";
     if (!profile.address.trim()) newErrors.address = "Address is required";
     if (profile.birthdate && isNaN(Date.parse(profile.birthdate)))
@@ -85,23 +65,47 @@ export default function UserProfile() {
 
   async function handleSave() {
     if (!validate()) {
-      toast.error("Details are not validatd!");
+      toast.error("Details are not validated!");
       return;
     }
+
+    const updatedAt = new Date(profile.updatedAt).getTime();
+    const now = Date.now();
+
+    if (now - updatedAt < 60 * 1000) {
+      toast.error(
+        "Profile was recently updated. Please wait before saving again."
+      );
+      return;
+    }
+
+    if (_.isEqual(profile, originalProfile)) {
+      toast.error("No changes detected.");
+      return;
+    }
+
     setLoading(true);
     setSuccessMsg("");
-    try {
-      const payload = { ...profile };
-      delete payload.confirmPassword;
 
-      const res = await fetch("/api/user/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+    try {
+      const payload = { user: profile, email: profile.email };
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE}/update-profile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
       });
+      const data = await res.json();
+
       if (res.ok) {
         toast.success("Profile updated successfully!");
         setSuccessMsg("Profile updated successfully!");
+        setUser(data.user);
+        setProfile(data.user);
+        setOriginalProfile(data.user);
       } else {
         const data = await res.json();
         toast.error(data.message || "Failed to update profile");
@@ -117,6 +121,7 @@ export default function UserProfile() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded shadow-md mt-12">
+      <Toaster position="bottom-right" />
       <h1 className="text-3xl font-bold mb-6 text-gray-800">My Profile</h1>
       {errors.form && (
         <div className="mb-4 text-red-600 font-semibold bg-red-100 p-3 rounded">
@@ -142,8 +147,15 @@ export default function UserProfile() {
               <input
                 type="file"
                 className="hidden"
-                accept="image/*"
-                onChange={handlePhotoChange}
+                accept=" image/*"
+                onClick={(e) => {
+                  toast("This feature is under construction!", {
+                    icon: "🚧",
+                  });
+                  e.preventDefault();
+                  return;
+                }}
+                // onChange={handlePhotoChange}
               />
             </label>
           </div>

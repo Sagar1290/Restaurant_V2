@@ -29,6 +29,7 @@ export default function Login() {
       if (res.ok) {
         toast.success("Login successful!");
         setUser(data.user);
+        localStorage.setItem("token", data.token)
         navigate("/");
       } else {
         toast.error(data.message || "Login failed");
@@ -93,6 +94,7 @@ export default function Login() {
       if (res.ok) {
         toast.success("OTP verified, login successful!");
         setUser(data.user);
+        localStorage.setItem("token", data.token)
         navigate("/");
       } else {
         toast.error(data.message || "Invalid OTP");

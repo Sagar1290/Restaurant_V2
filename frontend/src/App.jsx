@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import UserProfile from "./pages/UserProfile";
 import { useState } from "react";
 import { AuthContext } from "./Contexts";
+import ProtectedRoute from "./ProtectedRoute";
 
 function App() {
   const initialProfile = {
@@ -31,7 +32,14 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/userProfile" element={<UserProfile />} />
+            <Route
+              path="/userProfile"
+              element={
+                <ProtectedRoute>
+                  <UserProfile />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </main>
       </BrowserRouter>

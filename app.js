@@ -1,7 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
-import cors from 'cors'
+import cors from "cors";
 import { loginUser, otpLogin, verifyOtp } from "./api/login.js";
+import { updateProfile } from "./api/profile.js";
+import { authMiddleWare } from "./middleware.js";
 
 // import { setupDatabase } from './database.js'
 
@@ -12,7 +14,7 @@ const port = 3000;
 
 app.use(express.static("./frontend/dist"));
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 
 // setupDatabase().catch(err => {
 //   console.error("Database setup failed:", err);
@@ -36,6 +38,7 @@ app.post("/login-user", async (req, res) => {
       success: true,
       message: "User logged in successfully!",
       user: result.user,
+      token: result.token
     });
   } else {
     res.status(401).json({ success: false, message: result.message });
@@ -74,6 +77,27 @@ app.post("/verify-otp", async (req, res) => {
     res.json({
       success: true,
       message: "OTP Verified successfully!",
+      user: result.user,
+      token: result.token
+    });
+  } else {
+    res.status(401).json({ success: false, message: result.message });
+  }
+});
+
+app.post("/update-profile", authMiddleWare, async (req, res) => {
+  const { user, email } = req.body;
+
+  if (!email || !user) {
+    return res.status(400).json({ message: "email and user is required" });
+  }
+
+  const result = await updateProfile(user, email);
+
+  if (result.success) {
+    res.json({
+      success: true,
+      message: "Profile updated successfully!",
       user: result.user,
     });
   } else {
