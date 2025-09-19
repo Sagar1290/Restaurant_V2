@@ -90,7 +90,7 @@ export default function UserProfile() {
     try {
       const payload = { user: profile, email: profile.email };
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API_BASE}/update-profile`, {
+      const res = await fetch(`${API_BASE}/profile/update-profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

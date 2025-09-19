@@ -20,7 +20,7 @@ export default function Login() {
   async function handleEmailLogin(e) {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_BASE}/login-user`, {
+      const res = await fetch(`${API_BASE}/login/login-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -29,7 +29,7 @@ export default function Login() {
       if (res.ok) {
         toast.success("Login successful!");
         setUser(data.user);
-        localStorage.setItem("token", data.token)
+        localStorage.setItem("token", data.token);
         navigate("/");
       } else {
         toast.error(data.message || "Login failed");
@@ -45,7 +45,7 @@ export default function Login() {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/login-otp`, {
+      const res = await fetch(`${API_BASE}/login/login-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -85,7 +85,7 @@ export default function Login() {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/verify-otp`, {
+      const res = await fetch(`${API_BASE}/login/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp: otpStr }),
@@ -94,7 +94,7 @@ export default function Login() {
       if (res.ok) {
         toast.success("OTP verified, login successful!");
         setUser(data.user);
-        localStorage.setItem("token", data.token)
+        localStorage.setItem("token", data.token);
         navigate("/");
       } else {
         toast.error(data.message || "Invalid OTP");

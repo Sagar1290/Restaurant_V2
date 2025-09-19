@@ -1,9 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { loginUser, otpLogin, verifyOtp } from "./api/login.js";
-import { updateProfile } from "./api/profile.js";
-import { authMiddleWare } from "./middleware.js";
+
+import { loginRouter } from "./routes/loginRoutes.js";
+import { profileRouter } from "./routes/profileRoutes.js";
+import { menuRouter } from "./routes/menuRoutes.js";
 
 // import { setupDatabase } from './database.js'
 
@@ -24,86 +25,9 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.post("/login-user", async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: "email and password required" });
-  }
-
-  const result = await loginUser(email, password);
-
-  if (result.success) {
-    res.json({
-      success: true,
-      message: "User logged in successfully!",
-      user: result.user,
-      token: result.token
-    });
-  } else {
-    res.status(401).json({ success: false, message: result.message });
-  }
-});
-
-app.post("/login-otp", async (req, res) => {
-  const { email } = req.body;
-
-  if (!email) {
-    return res.status(400).json({ message: "email is required" });
-  }
-
-  const result = await otpLogin(email);
-
-  if (result.success) {
-    res.json({
-      success: true,
-      message: result.message,
-    });
-  } else {
-    res.status(401).json({ success: false, message: result.message });
-  }
-});
-
-app.post("/verify-otp", async (req, res) => {
-  const { email, otp } = req.body;
-
-  if (!email || !otp) {
-    return res.status(400).json({ message: "email and OTP is required" });
-  }
-
-  const result = await verifyOtp(email, otp);
-
-  if (result.success) {
-    res.json({
-      success: true,
-      message: "OTP Verified successfully!",
-      user: result.user,
-      token: result.token
-    });
-  } else {
-    res.status(401).json({ success: false, message: result.message });
-  }
-});
-
-app.post("/update-profile", authMiddleWare, async (req, res) => {
-  const { user, email } = req.body;
-
-  if (!email || !user) {
-    return res.status(400).json({ message: "email and user is required" });
-  }
-
-  const result = await updateProfile(user, email);
-
-  if (result.success) {
-    res.json({
-      success: true,
-      message: "Profile updated successfully!",
-      user: result.user,
-    });
-  } else {
-    res.status(401).json({ success: false, message: result.message });
-  }
-});
+app.use("/login", loginRouter);
+app.use("/proflie", profileRouter);
+app.use("/menu", menuRouter);
 
 app.listen(port, () => {
   console.log(`Restaurant app listening on port ${port}`);

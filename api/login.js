@@ -14,6 +14,7 @@ export async function loginUser(email, password) {
       const jwt_payload = {
         email: user.email,
         fullname: user.fullname,
+        role: user.user_role
       };
       const token = jwt.sign(jwt_payload, JWT_SECRET);
       return { success: true, user, token };
@@ -103,6 +104,7 @@ export async function verifyOtp(email, otp) {
     const jwt_payload = {
       email: userResult.email,
       fullname: userResult.fullname,
+        role: user.user_role
     };
     const token = jwt.sign(jwt_payload, JWT_SECRET);
 

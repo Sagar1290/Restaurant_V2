@@ -7,6 +7,7 @@ import UserProfile from "./pages/UserProfile";
 import { useState } from "react";
 import { AuthContext } from "./Contexts";
 import ProtectedRoute from "./ProtectedRoute";
+import Menu from "./pages/Menu";
 
 function App() {
   const initialProfile = {
@@ -40,6 +41,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/menu" element={<Menu />} />
           </Routes>
         </main>
       </BrowserRouter>
