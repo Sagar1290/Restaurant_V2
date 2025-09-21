@@ -4,10 +4,15 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import { Toaster } from "react-hot-toast";
 import UserProfile from "./pages/UserProfile";
-import { useState } from "react";
-import { AuthContext } from "./Contexts";
+import { useEffect, useState } from "react";
+import { AuthContext, MenuContext } from "./Contexts";
 import ProtectedRoute from "./ProtectedRoute";
 import Menu from "./pages/Menu";
+import Footer from "./components/Footer";
+import About from "./pages/About";
+import ScrollToTop from "./ScrollToTop";
+
+const API_BASE = "http://localhost:3000";
 
 function App() {
   const initialProfile = {
@@ -23,28 +28,52 @@ function App() {
     preferences: "{}",
   };
   const [user, setUser] = useState(initialProfile);
+  const [loading, setLoading] = useState(false);
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/menu/get-menu`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setItems(data.menuItems);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-8">
+        <span className="text-lg text-gray-600">Loading ...</span>
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>
-      <BrowserRouter>
-        <Navbar />
-        <Toaster position="bottom-right" />
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/userProfile"
-              element={
-                <ProtectedRoute>
-                  <UserProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/menu" element={<Menu />} />
-          </Routes>
-        </main>
-      </BrowserRouter>
+      <MenuContext.Provider value={{ items, setItems }}>
+        <BrowserRouter>
+          <Navbar />
+          <Toaster position="bottom-right" />
+          <main className="w-full mt-16">
+            <ScrollToTop />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/userProfile"
+                element={
+                  <ProtectedRoute>
+                    <UserProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/menu" element={<Menu />} />
+              <Route path="/about-us" element={<About />} />
+            </Routes>
+          </main>
+          <Footer />
+        </BrowserRouter>
+      </MenuContext.Provider>
     </AuthContext.Provider>
   );
 }
