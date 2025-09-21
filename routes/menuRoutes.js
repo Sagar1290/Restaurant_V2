@@ -72,7 +72,44 @@ menuRouter.post("/create-item", adminAuthMiddleWare, async (req, res) => {
   }
 });
 
-menuRouter.put("/update-item/:id", updateMenuItem);
-menuRouter.delete("/delete-item/:id", deleteMenuItem);
+menuRouter.put("/update-item/:id", adminAuthMiddleWare, async (req, res) => {
+  try {
+    const id = req.params["id"]
+    const { itemDetail } = req.body
+
+    const result = await updateMenuItem(id, itemDetail);
+    if (result.success) {
+      res.json({
+        success: true,
+        message: "Menu Item Updated successfully!",
+        menuItems: result.menuItems
+      });
+    } else {
+      res.status(404).json({ success: false, message: result.message });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
+  }
+});
+menuRouter.delete("/delete-item/:id", adminAuthMiddleWare, async (req, res) => {
+  try {
+    const id = req.params["id"]
+    const result = await deleteMenuItem(id);
+    if (result.success) {
+      res.json({
+        success: true,
+        message: "Menu Item Updated successfully!",
+      });
+    } else {
+      res.status(404).json({ success: false, message: result.message });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
+  }
+});
 
 export { menuRouter };

@@ -111,5 +111,103 @@ export async function createMenuItem(itemDetail) {
   }
 }
 
-export async function updateMenuItem() {}
-export async function deleteMenuItem() {}
+export async function updateMenuItem(id, itemDetail) {
+  try {
+    const requiredFields = [
+      "name",
+      "category",
+      "description",
+      "price",
+      "discount",
+      "image_url",
+      "is_veg",
+      "allergens",
+      "available",
+      "ingredients",
+    ];
+
+    const missingFields = [];
+    for (const field of requiredFields) {
+      if (!(field in itemDetail)) {
+        missingFields.push(field);
+      }
+    }
+
+    if (missingFields.length > 0) {
+      return { success: false, message: `Missing required fields: ${missingFields.join(', ')}` };
+    }
+
+    const {
+      name,
+      category,
+      description,
+      price,
+      discount,
+      image_url,
+      is_veg,
+      allergens,
+      available,
+      ingredients,
+    } = itemDetail;
+
+    const db = await initDatabase();
+    const CURRENT_TIMESTAMP = new Date().toISOString();
+
+    const updateQuery = `
+      UPDATE Menu
+      SET 
+        name = ?,
+        category = ?,
+        description = ?,
+        price = ?,
+        discount = ?,
+        image_url = ?,
+        is_veg = ?,
+        allergens = ?,
+        available = ?,
+        ingredients = ?,
+        updatedAt = ?
+      WHERE id = ?
+    `;
+
+    const updateResults = await db.run(updateQuery, [
+      name,
+      category,
+      description,
+      price,
+      discount,
+      image_url,
+      is_veg,
+      allergens,
+      available,
+      ingredients,
+      CURRENT_TIMESTAMP,
+      id,
+    ]);
+
+    if (updateResults.changes === 0) {
+      return { success: false, message: `No menu item found with id: ${id}` };
+    }
+
+    const menuItems = await db.all("SELECT * from Menu");
+    return { success: true, message: "Updated successfully!", menuItems };
+
+  } catch (error) {
+    console.error("Error updating menu item:", error);
+    return { success: false, message: "Failed to update menu item", error: error.message };
+  }
+}
+
+export async function deleteMenuItem(id) {
+  try {
+    const db = await initDatabase();
+    const deleteQuery = "DELETE FROM Menu WHERE id = ?";
+    await db.run(deleteQuery, [id]);
+
+    return { success: true, message: "Item deleted successfully!" };
+
+  } catch (error) {
+    console.error("Error deleting menu item:", error);
+    return { success: false, message: "Failed to delete menu item", error: error.message };
+  }
+}

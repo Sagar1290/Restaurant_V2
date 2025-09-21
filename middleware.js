@@ -32,10 +32,6 @@ export function adminAuthMiddleWare(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (decoded.email != req.body.email) {
-      return res.status(401).json({ message: "Unauthorized Token" });
-    }
-
     if (decoded.role != "manager") {
       return res.status(401).json({ message: "Unauthorized User" });
     }

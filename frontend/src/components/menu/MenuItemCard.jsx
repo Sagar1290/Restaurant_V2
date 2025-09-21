@@ -1,7 +1,6 @@
-import React from "react";
 import { Leaf, AlertTriangle, Plus } from "lucide-react";
 
-export default function MenuItemCard({ item }) {
+export default function MenuItemCard({ item, onSelect }) {
   const {
     name,
     category,
@@ -25,6 +24,7 @@ export default function MenuItemCard({ item }) {
       className={`relative bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 ${
         !available ? "opacity-60" : ""
       }`}
+      onClick={() => onSelect(item)}
     >
       <div className="relative">
         <img
