@@ -19,7 +19,6 @@ export default function EditMenuItemForm({ item, onCancel, onSubmit }) {
     e.preventDefault();
     if (onSubmit) {
       onSubmit(item.id, formData, setSaving);
-      onCancel();
     }
   };
 

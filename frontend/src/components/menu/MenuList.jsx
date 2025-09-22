@@ -22,7 +22,10 @@ export default function MenuList({ items }) {
           onModalClose={() => setSelectedItem(null)}
           title={selectedItem.name || "Menu Item"}
         >
-          <MenuItemModal item={selectedItem} onModalClose={() => setSelectedItem(null)}/>
+          <MenuItemModal
+            item={selectedItem}
+            onModalClose={() => setSelectedItem(null)}
+          />
         </Modal>
       )}
     </>

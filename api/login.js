@@ -10,6 +10,7 @@ export async function loginUser(email, password) {
     await db.close();
 
     if (user) {
+      const { password, ...userDetail } = user
       const JWT_SECRET = process.env.JWT_SECRET;
       const jwt_payload = {
         email: user.email,
@@ -17,7 +18,7 @@ export async function loginUser(email, password) {
         role: user.user_role,
       };
       const token = jwt.sign(jwt_payload, JWT_SECRET);
-      return { success: true, user, token };
+      return { success: true, user: userDetail, token };
     } else {
       return { success: false, message: "Invalid credentials" };
     }
@@ -100,6 +101,8 @@ export async function verifyOtp(email, otp) {
     );
     await db.close();
 
+    const { password, ...userDetail } = userResult
+
     const JWT_SECRET = process.env.JWT_SECRET;
     const jwt_payload = {
       email: userResult.email,
@@ -108,7 +111,7 @@ export async function verifyOtp(email, otp) {
     };
     const token = jwt.sign(jwt_payload, JWT_SECRET);
 
-    return { success: true, user: userResult, token };
+    return { success: true, user: userDetail, token };
   } catch (error) {
     console.log(error);
     return { success: false, message: "Server Error" };

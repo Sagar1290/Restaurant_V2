@@ -1,4 +1,4 @@
-import { Leaf, AlertTriangle, Plus } from "lucide-react";
+import { Leaf, AlertTriangle, Plus, Edit } from "lucide-react";
 
 export default function MenuItemCard({ item, onSelect }) {
   const {
@@ -18,6 +18,10 @@ export default function MenuItemCard({ item, onSelect }) {
   const discountedPrice = hasDiscount
     ? (price * (1 - discount / 100)).toFixed(2)
     : price;
+
+  const onAddToCart = (item) => {
+    console.log("Added to cart! will be implemented later.");
+  };
 
   return (
     <div
@@ -89,6 +93,10 @@ export default function MenuItemCard({ item, onSelect }) {
           className={`font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white shadow-lg hover:shadow-xl px-4 py-2 text-sm flex items-center space-x-2 ${
             !available ? "opacity-50 cursor-not-allowed" : ""
           }`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddToCart(item);
+          }}
         >
           <Plus className="w-4 h-4" />
           <span>Add to Cart</span>

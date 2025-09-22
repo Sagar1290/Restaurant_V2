@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import MenuList from "../components/menu/MenuList";
-import { MenuContext } from "../Contexts.jsx";
+import { AuthContext, MenuContext } from "../Contexts.jsx";
 import {
   ChefHat,
   CookingPot,
@@ -21,6 +21,7 @@ const categories = [
 ];
 
 export default function Menu() {
+  const { user } = useContext(AuthContext);
   const { items } = useContext(MenuContext);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -39,8 +40,8 @@ export default function Menu() {
   return (
     <main className="bg-gray-50 min-h-screen mb-8">
       <div className="bg-gray-900 text-white text-center py-12 px-4">
-        <h1 className="text-4xl font-bold mb-4">Our Menu</h1>
-        <p className="max-w-2xl mx-auto text-gray-300">
+        <h1 className="text-5xl font-bold mb-6">Our Menu</h1>
+        <p className="max-w-2xl tracking-wider mx-auto text-gray-300">
           Discover our carefully crafted dishes made with the finest ingredients
           and culinary expertise.
         </p>
@@ -73,13 +74,17 @@ export default function Menu() {
               <span>{cat.name}</span>
             </div>
           ))}
-          <button className="ml-4 flex items-center space-x-2 px-6 py-3 bg-green-600 text-white rounded-full font-medium transition-all duration-200 cursor-pointer whitespace-nowrap hover:bg-green-700"
-          onClick={()=>setIsAddNewItemModalOpen(true)}>
-            <div className="w-5 h-5 flex items-center justify-center">
-              <Plus />
-            </div>
-            <span>Add Menu Item</span>
-          </button>
+          {user?.user_role == "manager" && (
+            <button
+              className="ml-4 flex items-center space-x-2 px-6 py-3 bg-green-600 text-white rounded-full font-medium transition-all duration-200 cursor-pointer whitespace-nowrap hover:bg-green-700"
+              onClick={() => setIsAddNewItemModalOpen(true)}
+            >
+              <div className="w-5 h-5 flex items-center justify-center">
+                <Plus />
+              </div>
+              <span>Add Menu Item</span>
+            </button>
+          )}
         </div>
 
         <MenuList items={filteredItems} />
@@ -90,7 +95,9 @@ export default function Menu() {
           onModalClose={() => setIsAddNewItemModalOpen(false)}
           title={"Add New Menu Item"}
         >
-          <AddNewItemModal onModalClose={() => setIsAddNewItemModalOpen(false)}/>
+          <AddNewItemModal
+            onModalClose={() => setIsAddNewItemModalOpen(false)}
+          />
         </Modal>
       )}
     </main>

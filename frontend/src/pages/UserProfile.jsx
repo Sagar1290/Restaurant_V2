@@ -212,7 +212,7 @@ export default function UserProfile() {
                 onChange={(e) =>
                   setProfile({ ...profile, password: e.target.value })
                 }
-                placeholder="Leave blank to keep current password"
+                placeholder="Create one or leave blank to keep current password"
                 autoComplete="new-password"
               />
             </div>
@@ -296,16 +296,18 @@ export default function UserProfile() {
               <input
                 type="date"
                 className={`w-full px-2 py-1 focus:outline-none ${
-                  errors.birthdate ? "border-red-500" : ""
+                  errors.date_of_birth ? "border-red-500" : ""
                 }`}
-                value={profile.birthdate}
+                value={profile.date_of_birth}
                 onChange={(e) =>
-                  setProfile({ ...profile, birthdate: e.target.value })
+                  setProfile({ ...profile, date_of_birth: e.target.value })
                 }
               />
             </div>
             {errors.birthdate && (
-              <p className="text-red-600 text-sm mt-1">{errors.birthdate}</p>
+              <p className="text-red-600 text-sm mt-1">
+                {errors.date_of_birth}
+              </p>
             )}
           </div>
 
@@ -319,6 +321,9 @@ export default function UserProfile() {
               readOnly
               className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
             />
+            <p className="text-xs text-gray-500 mt-1">
+              Please write an email requesting a change in your role.
+            </p>
           </div>
         </div>
       </div>

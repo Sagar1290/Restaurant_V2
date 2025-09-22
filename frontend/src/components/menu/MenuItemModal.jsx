@@ -1,11 +1,13 @@
 import { Edit, Leaf, Trash } from "lucide-react";
 import { useContext, useState } from "react";
 import EditMenuItemForm from "./EditMenuItemForm";
-import { MenuContext } from "../../Contexts";
+import { AuthContext, MenuContext } from "../../Contexts";
+import toast from "react-hot-toast";
 
 const API_BASE = "http://localhost:3000";
 
 export default function MenuItemModal({ item, onModalClose }) {
+  const { user } = useContext(AuthContext);
   const { items, setItems } = useContext(MenuContext);
   if (!item) return null;
 
@@ -37,11 +39,12 @@ export default function MenuItemModal({ item, onModalClose }) {
       }
 
       const data = await res.json();
+      toast.success("Item Updated Successfully");
       setItems(data["menuItems"]);
       onModalClose();
       return { success: true, data };
     } catch (error) {
-      console.error("Edit error:", error);
+      toast.error(error["message"]);
       return { success: false, error: error.message };
     } finally {
       setLoading(false);
@@ -68,11 +71,12 @@ export default function MenuItemModal({ item, onModalClose }) {
       }
 
       const data = await res.json();
-      setItems(items.filter(item => item.id !== itemId));
+      toast.success("Item deleted successfully!");
+      setItems(items.filter((item) => item.id !== itemId));
       onModalClose();
       return { success: true, data };
     } catch (error) {
-      console.error("Delete error:", error);
+      toast.error(error["message"]);
       return { success: false, error: error.message };
     } finally {
       setLoading(false);
@@ -120,28 +124,30 @@ export default function MenuItemModal({ item, onModalClose }) {
                   )}
                 </div>
               </div>
-              <div className="flex flex-col space-y-2">
-                <button
-                  className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 text-sm flex items-center space-x-1"
-                  onClick={() => setIsEditing(true)}
-                >
-                  <div className="w-4 h-4 flex items-center justify-center">
-                    <Edit />
-                  </div>
-                  <span>Edit</span>
-                </button>
+              {user?.user_role == "manager" && (
+                <div className="flex flex-col space-y-2">
+                  <button
+                    className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 text-sm flex items-center space-x-1"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    <div className="w-4 h-4 flex items-center justify-center">
+                      <Edit />
+                    </div>
+                    <span>Edit</span>
+                  </button>
 
-                <button
-                  className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-red-50 text-red-600 hover:bg-red-100 px-4 py-2 text-sm flex items-center space-x-1"
-                  disabled={deleting}
-                  onClick={() => handleMenuItemDelete(item.id, setDeleting)}
-                >
-                  <div className="w-4 h-4 flex items-center justify-center">
-                    <Trash />
-                  </div>
-                  <span>{deleting ? "Deleting" : "Delete"}</span>
-                </button>
-              </div>
+                  <button
+                    className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-red-50 text-red-600 hover:bg-red-100 px-4 py-2 text-sm flex items-center space-x-1"
+                    disabled={deleting}
+                    onClick={() => handleMenuItemDelete(item.id, setDeleting)}
+                  >
+                    <div className="w-4 h-4 flex items-center justify-center">
+                      <Trash />
+                    </div>
+                    <span>{deleting ? "Deleting" : "Delete"}</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

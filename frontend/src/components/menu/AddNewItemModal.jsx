@@ -1,9 +1,10 @@
 import { useContext, useState } from "react";
 import { MenuContext } from "../../Contexts";
+import toast from "react-hot-toast";
 
 const API_BASE = "http://localhost:3000";
 
-const AddNewItemModal = ({onModalClose}) => {
+const AddNewItemModal = ({ onModalClose }) => {
   const { items, setItems } = useContext(MenuContext);
   const [formData, setFormData] = useState({
     name: "",
@@ -13,15 +14,23 @@ const AddNewItemModal = ({onModalClose}) => {
     discount: 0,
     image_url: "",
     is_veg: 1,
-    allergens: "none",
+    allergens: "",
     available: 1,
     ingredients: "",
   });
   const [loading, setLoading] = useState(false);
 
   const handleAddNewMenuItem = async () => {
+    if (!formData.name || !formData.price) {
+      toast.error("Please provide name and price!");
+      return;
+    }
     try {
       setLoading(true);
+      const image_url = `https://placehold.co/400/png?text=${formData.name
+        .split(" ")
+        .join("")}`;
+      formData["image_url"] = image_url;
 
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Unauthorized: No token found");
@@ -41,11 +50,12 @@ const AddNewItemModal = ({onModalClose}) => {
       }
 
       const data = await res.json();
-      setItems([...items, formData])
+      toast.success("Item Added successfully.");
+      setItems([...items, formData]);
       onModalClose();
       return { success: true, data };
     } catch (error) {
-      console.error("Edit error:", error);
+      toast.error(error["message"]);
       return { success: false, error: error.message };
     } finally {
       setLoading(false);

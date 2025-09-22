@@ -1,11 +1,11 @@
 import { useContext, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { LogOut, LucideLogOut, Menu, Power, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Contexts.jsx";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   return (
@@ -62,6 +62,14 @@ export default function Navbar() {
               >
                 Login
               </a>
+            )}
+            {user && (
+              <button
+                className="text-gray-700 hover:text-red-500 text-md font-medium transition cursor-pointer"
+                onClick={logout}
+              >
+                <Power />
+              </button>
             )}
           </div>
 
