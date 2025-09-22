@@ -1,7 +1,16 @@
 import React, { useContext, useState } from "react";
 import MenuList from "../components/menu/MenuList";
-import { MenuContext } from "../Contexts";
-import { ChefHat, CookingPot, IceCreamBowl, Martini, Soup } from "lucide-react";
+import { MenuContext } from "../Contexts.jsx";
+import {
+  ChefHat,
+  CookingPot,
+  IceCreamBowl,
+  Martini,
+  Plus,
+  Soup,
+} from "lucide-react";
+import Modal from "../components/Modal";
+import AddNewItemModal from "../components/menu/AddNewItemModal";
 
 const categories = [
   { name: "All", icon: <ChefHat /> },
@@ -15,6 +24,7 @@ export default function Menu() {
   const { items } = useContext(MenuContext);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [isAddNewItemModalOpen, setIsAddNewItemModalOpen] = useState(false);
 
   const filteredItems = items.filter((item) => {
     const matchCategory =
@@ -45,7 +55,7 @@ export default function Menu() {
         </div>
       </div>
       <div className="mt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap justify-center mb-8 bg-gray-100 rounded-full p-2 max-w-4xl mx-auto">
+        <div className="flex flex-row justify-center mb-8 bg-gray-100 rounded-full p-2 max-w-4xl mx-auto">
           {categories.map((cat) => (
             <div
               key={cat.name}
@@ -63,10 +73,26 @@ export default function Menu() {
               <span>{cat.name}</span>
             </div>
           ))}
+          <button className="ml-4 flex items-center space-x-2 px-6 py-3 bg-green-600 text-white rounded-full font-medium transition-all duration-200 cursor-pointer whitespace-nowrap hover:bg-green-700"
+          onClick={()=>setIsAddNewItemModalOpen(true)}>
+            <div className="w-5 h-5 flex items-center justify-center">
+              <Plus />
+            </div>
+            <span>Add Menu Item</span>
+          </button>
         </div>
 
         <MenuList items={filteredItems} />
       </div>
+      {isAddNewItemModalOpen && (
+        <Modal
+          isModalOpen={isAddNewItemModalOpen}
+          onModalClose={() => setIsAddNewItemModalOpen(false)}
+          title={"Add New Menu Item"}
+        >
+          <AddNewItemModal onModalClose={() => setIsAddNewItemModalOpen(false)}/>
+        </Modal>
+      )}
     </main>
   );
 }

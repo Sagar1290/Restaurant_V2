@@ -5,7 +5,7 @@ import Login from "./pages/Login";
 import { Toaster } from "react-hot-toast";
 import UserProfile from "./pages/UserProfile";
 import { useEffect, useState } from "react";
-import { AuthContext, MenuContext } from "./Contexts";
+import { AuthProvider, MenuContext } from "./Contexts.jsx";
 import ProtectedRoute from "./ProtectedRoute";
 import Menu from "./pages/Menu";
 import Footer from "./components/Footer";
@@ -15,19 +15,6 @@ import ScrollToTop from "./ScrollToTop";
 const API_BASE = "http://localhost:3000";
 
 function App() {
-  const initialProfile = {
-    email: "",
-    fullname: "",
-    password: "",
-    confirmPassword: "",
-    phone: "",
-    address: "",
-    profile_photo: "",
-    user_role: "customer",
-    birthdate: "",
-    preferences: "{}",
-  };
-  const [user, setUser] = useState(initialProfile);
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState([]);
 
@@ -49,7 +36,7 @@ function App() {
   }
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthProvider>
       <MenuContext.Provider value={{ items, setItems }}>
         <BrowserRouter>
           <Navbar />
@@ -74,7 +61,7 @@ function App() {
           <Footer />
         </BrowserRouter>
       </MenuContext.Provider>
-    </AuthContext.Provider>
+    </AuthProvider>
   );
 }
 

@@ -1,10 +1,12 @@
 import { Edit, Leaf, Trash } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import EditMenuItemForm from "./EditMenuItemForm";
+import { MenuContext } from "../../Contexts";
 
 const API_BASE = "http://localhost:3000";
 
-export default function MenuItemModal({ item }) {
+export default function MenuItemModal({ item, onModalClose }) {
+  const { items, setItems } = useContext(MenuContext);
   if (!item) return null;
 
   const [isEditing, setIsEditing] = useState(false);
@@ -35,6 +37,8 @@ export default function MenuItemModal({ item }) {
       }
 
       const data = await res.json();
+      setItems(data["menuItems"]);
+      onModalClose();
       return { success: true, data };
     } catch (error) {
       console.error("Edit error:", error);
@@ -64,6 +68,8 @@ export default function MenuItemModal({ item }) {
       }
 
       const data = await res.json();
+      setItems(items.filter(item => item.id !== itemId));
+      onModalClose();
       return { success: true, data };
     } catch (error) {
       console.error("Delete error:", error);

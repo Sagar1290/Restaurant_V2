@@ -15,23 +15,14 @@ export default function MenuList({ items }) {
           <MenuItemCard key={item.id} item={item} onSelect={setSelectedItem} />
         ))}
       </div>
-      {/* {selectedItem && (
-        <Modal
-          isOpen={!!selectedItem}
-          onClose={() => setSelectedItem(null)}
-          title={selectedItem.name}
-        >
-          <MenuItemModal item={selectedItem} />
-        </Modal>
-      )} */}
-      // inside MenuList.jsx
+
       {selectedItem && (
         <Modal
-          isOpen={!!selectedItem}
-          onClose={() => setSelectedItem(null)}
+          isModalOpen={!!selectedItem}
+          onModalClose={() => setSelectedItem(null)}
           title={selectedItem.name || "Menu Item"}
         >
-          <MenuItemModal item={selectedItem} />
+          <MenuItemModal item={selectedItem} onModalClose={() => setSelectedItem(null)}/>
         </Modal>
       )}
     </>

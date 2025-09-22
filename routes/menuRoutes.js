@@ -34,7 +34,6 @@ menuRouter.get("/menu-item/:id", async (req, res) => {
   try {
     const params = req.params;
     const result = await getMenuItem(params["id"]);
-    console.log(result)
     if (result.success) {
       res.json({
         success: true,
@@ -93,6 +92,7 @@ menuRouter.put("/update-item/:id", adminAuthMiddleWare, async (req, res) => {
       .json({ success: false, message: "Server error", error: err.message });
   }
 });
+
 menuRouter.delete("/delete-item/:id", adminAuthMiddleWare, async (req, res) => {
   try {
     const id = req.params["id"]

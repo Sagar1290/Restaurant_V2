@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../Contexts";
+import { AuthContext } from "../Contexts.jsx";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);

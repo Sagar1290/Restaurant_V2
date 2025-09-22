@@ -9,7 +9,7 @@ import {
   Camera,
 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-import { AuthContext } from "../Contexts";
+import { AuthContext } from "../Contexts.jsx";
 import _ from "lodash";
 
 const API_BASE = "http://localhost:3000";

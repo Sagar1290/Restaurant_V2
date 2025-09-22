@@ -2,8 +2,8 @@ import { X } from "lucide-react";
 import { useEffect } from "react";
 
 const Modal = ({
-  isOpen,
-  onClose,
+  isModalOpen,
+  onModalClose,
   children,
   title,
   footer = null,
@@ -11,22 +11,22 @@ const Modal = ({
   heightClass = "h-[70vh]",
 }) => {
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isModalOpen) return;
 
     const handleEscape = (e) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onModalClose();
     };
 
     window.addEventListener("keydown", handleEscape);
     return () => {
       window.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen, onClose]);
+  }, [isModalOpen, onModalClose]);
 
-  if (!isOpen) return null;
+  if (!isModalOpen) return null;
 
   const closeModal = (e) => {
-    if (e.target && e.target.id === "modal-backdrop") onClose();
+    if (e.target && e.target.id === "modal-backdrop") onModalClose();
   };
 
   return (
@@ -52,7 +52,7 @@ const Modal = ({
           </h2>
 
           <button
-            onClick={onClose}
+            onClick={onModalClose}
             aria-label="Close modal"
             className="ml-4 text-gray-500 hover:text-gray-700 p-1 rounded"
           >

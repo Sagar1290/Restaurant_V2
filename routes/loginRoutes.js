@@ -1,5 +1,6 @@
 import express from "express";
-import { loginUser, otpLogin, verifyOtp } from "../api/login.js";
+import { authMiddleWare } from "../middleware.js";
+import { getUser, loginUser, otpLogin, verifyOtp } from "../api/login.js";
 
 export const loginRouter = express.Router();
 
@@ -24,7 +25,9 @@ loginRouter.post("/login-user", async (req, res) => {
       res.status(401).json({ success: false, message: result.message });
     }
   } catch (err) {
-    res.status(500).json({ success: false, message: "Server error", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
   }
 });
 
@@ -47,7 +50,9 @@ loginRouter.post("/login-otp", async (req, res) => {
       res.status(401).json({ success: false, message: result.message });
     }
   } catch (err) {
-    res.status(500).json({ success: false, message: "Server error", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
   }
 });
 
@@ -72,6 +77,27 @@ loginRouter.post("/verify-otp", async (req, res) => {
       res.status(401).json({ success: false, message: result.message });
     }
   } catch (err) {
-    res.status(500).json({ success: false, message: "Server error", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
+  }
+});
+
+loginRouter.get("/user", authMiddleWare, async (req, res) => {
+  try {
+    const result = await getUser(req.user_email);
+    if (result.success) {
+      res.json({
+        success: true,
+        message: "User Details fetched successfully!",
+        user: result.user,
+      });
+    } else {
+      res.status(401).json({ success: false, message: result.message });
+    }
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
   }
 });

@@ -14,7 +14,7 @@ export async function loginUser(email, password) {
       const jwt_payload = {
         email: user.email,
         fullname: user.fullname,
-        role: user.user_role
+        role: user.user_role,
       };
       const token = jwt.sign(jwt_payload, JWT_SECRET);
       return { success: true, user, token };
@@ -104,11 +104,32 @@ export async function verifyOtp(email, otp) {
     const jwt_payload = {
       email: userResult.email,
       fullname: userResult.fullname,
-        role: user.user_role
+      role: user.user_role,
     };
     const token = jwt.sign(jwt_payload, JWT_SECRET);
 
     return { success: true, user: userResult, token };
+  } catch (error) {
+    console.log(error);
+    return { success: false, message: "Server Error" };
+  }
+}
+
+export async function getUser(user_email) {
+  try {
+    const db = await initDatabase();
+
+    const userResult = await db.get(
+      "SELECT * FROM UserDetails WHERE email = ?",
+      [user_email]
+    );
+    await db.close();
+
+    if (!userResult) {
+      return { success: false, message: "No User Found" };
+    }
+
+    return { success: true, user: userResult };
   } catch (error) {
     console.log(error);
     return { success: false, message: "Server Error" };

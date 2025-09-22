@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Key } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import "react-toastify/dist/ReactToastify.css";
-import { AuthContext } from "../Contexts";
+import { AuthContext } from "../Contexts.jsx";
 
 const API_BASE = "http://localhost:3000";
 

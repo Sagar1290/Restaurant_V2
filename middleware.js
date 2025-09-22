@@ -10,13 +10,10 @@ export function authMiddleWare(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    if (decoded.email != req.body.email) {
-      return res.status(401).json({ message: "Unauthorized Token" });
-    }
-
+    req.user_email = decoded["email"]
     next();
   } catch (err) {
+    console.log(err)
     return res.status(403).json({ message: "Invalid token" });
   }
 }
