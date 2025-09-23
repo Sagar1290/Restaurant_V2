@@ -5,7 +5,7 @@ import Login from "./pages/Login";
 import { Toaster } from "react-hot-toast";
 import UserProfile from "./pages/UserProfile";
 import { useEffect, useState } from "react";
-import { AuthProvider, MenuContext } from "./Contexts.jsx";
+import { AuthProvider, CartContext, MenuContext } from "./Contexts.jsx";
 import ProtectedRoute from "./ProtectedRoute";
 import Menu from "./pages/Menu";
 import Footer from "./components/Footer";
@@ -17,6 +17,7 @@ const API_BASE = "http://localhost:3000";
 function App() {
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState([]);
+  const [cart, setCart] = useState([]);
 
   useEffect(() => {
     fetch(`${API_BASE}/menu/get-menu`)
@@ -34,32 +35,34 @@ function App() {
       </div>
     );
   }
-
+  console.log(cart);
   return (
     <AuthProvider>
       <MenuContext.Provider value={{ items, setItems }}>
-        <BrowserRouter>
-          <Navbar />
-          <Toaster position="bottom-right" />
-          <main className="w-full mt-16">
-            <ScrollToTop />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route
-                path="/userProfile"
-                element={
-                  <ProtectedRoute>
-                    <UserProfile />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/menu" element={<Menu />} />
-              <Route path="/about-us" element={<About />} />
-            </Routes>
-          </main>
-          <Footer />
-        </BrowserRouter>
+        <CartContext.Provider value={{ cart, setCart }}>
+          <BrowserRouter>
+            <Navbar />
+            <Toaster position="bottom-right" />
+            <main className="w-full mt-16">
+              <ScrollToTop />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/userProfile"
+                  element={
+                    <ProtectedRoute>
+                      <UserProfile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/menu" element={<Menu />} />
+                <Route path="/about-us" element={<About />} />
+              </Routes>
+            </main>
+            <Footer />
+          </BrowserRouter>
+        </CartContext.Provider>
       </MenuContext.Provider>
     </AuthProvider>
   );

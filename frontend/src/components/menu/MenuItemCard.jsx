@@ -1,6 +1,10 @@
 import { Leaf, AlertTriangle, Plus, Edit } from "lucide-react";
+import { useContext } from "react";
+import { CartContext } from "../../Contexts";
+import _ from "lodash";
 
 export default function MenuItemCard({ item, onSelect }) {
+  const { cart, setCart } = useContext(CartContext);
   const {
     name,
     category,
@@ -20,6 +24,31 @@ export default function MenuItemCard({ item, onSelect }) {
     : price;
 
   const onAddToCart = (item) => {
+    const cartItem = {
+      itemID: item.id,
+      item: item,
+      quantity: 1,
+      subTotal: discountedPrice,
+    };
+    console.log(cartItem);
+    if (!cart || cart.length == 0) {
+      setCart([cartItem]);
+    } else {
+      const cartPresent = cart.map((ele) => ele.itemid == item.id);
+      console.log(cartPresent[0]);
+      if (cartPresent[0]) {
+        const groupedCart = _.keyBy(cart, "itemID");
+        console.log(groupedCart);
+        groupedCart[item.id]["qunatity"] = groupedCart[item.id]["quantity"] + 1;
+        groupedCart[item.id]["subTotal"] =
+          groupedCart[item.id]["subTotal"] + discountedPrice;
+        console.log(groupedCart);
+      } else {
+        setCart([...cart, cartItem]);
+      }
+    }
+
+    // console.log(itemPresent);
     console.log("Added to cart! will be implemented later.");
   };
 

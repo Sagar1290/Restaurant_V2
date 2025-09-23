@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext();
 export const MenuContext = createContext();
+export const CartContext = createContext();
 
 const API_BASE = "http://localhost:3000";
 
@@ -40,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem("token");
   };
-  
+
   return (
     <AuthContext.Provider value={{ user, setUser, login, logout }}>
       {children}

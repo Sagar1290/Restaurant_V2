@@ -1,11 +1,14 @@
 import { useContext, useState } from "react";
-import { LogOut, LucideLogOut, Menu, Power, X } from "lucide-react";
+import { Menu, Power, ShoppingCart, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Contexts.jsx";
+import Modal from "./Modal.jsx";
+import CartModal from "./cart/CartModal.jsx";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const navigate = useNavigate();
 
   return (
@@ -48,6 +51,17 @@ export default function Navbar() {
             >
               Contact
             </a>
+            <button
+              class="relative p-2 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md transition-colors duration-200 cursor-pointer"
+              onClick={() => setIsCartModalOpen(true)}
+            >
+              <div class="w-6 h-6 flex items-center justify-center">
+                <ShoppingCart />
+              </div>
+              <span class="absolute -top-1 -right-1 bg-orange-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                1
+              </span>
+            </button>
             {user?.email ? (
               <a
                 onClick={() => navigate("/userProfile")}
@@ -109,6 +123,15 @@ export default function Navbar() {
             Login
           </a>
         </div>
+      )}
+      {isCartModalOpen && (
+        <Modal
+          title={"Cart Modal"}
+          isModalOpen={isCartModalOpen}
+          onModalClose={() => setIsCartModalOpen(false)}
+        >
+          <CartModal />
+        </Modal>
       )}
     </nav>
   );
