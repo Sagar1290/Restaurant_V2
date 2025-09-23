@@ -17,7 +17,7 @@ const API_BASE = "http://localhost:3000";
 function App() {
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState([]);
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(new Map());
 
   useEffect(() => {
     fetch(`${API_BASE}/menu/get-menu`)
@@ -35,7 +35,7 @@ function App() {
       </div>
     );
   }
-  console.log(cart);
+
   return (
     <AuthProvider>
       <MenuContext.Provider value={{ items, setItems }}>

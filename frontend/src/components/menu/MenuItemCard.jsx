@@ -1,10 +1,18 @@
-import { Leaf, AlertTriangle, Plus, Edit } from "lucide-react";
+import {
+  Leaf,
+  AlertTriangle,
+  Plus,
+  ShoppingBag,
+  BaggageClaim,
+} from "lucide-react";
 import { useContext } from "react";
 import { CartContext } from "../../Contexts";
 import _ from "lodash";
+import toast from "react-hot-toast";
 
 export default function MenuItemCard({ item, onSelect }) {
   const { cart, setCart } = useContext(CartContext);
+  // const cartT = new Map();
   const {
     name,
     category,
@@ -24,32 +32,24 @@ export default function MenuItemCard({ item, onSelect }) {
     : price;
 
   const onAddToCart = (item) => {
-    const cartItem = {
-      itemID: item.id,
-      item: item,
-      quantity: 1,
-      subTotal: discountedPrice,
-    };
-    console.log(cartItem);
-    if (!cart || cart.length == 0) {
-      setCart([cartItem]);
-    } else {
-      const cartPresent = cart.map((ele) => ele.itemid == item.id);
-      console.log(cartPresent[0]);
-      if (cartPresent[0]) {
-        const groupedCart = _.keyBy(cart, "itemID");
-        console.log(groupedCart);
-        groupedCart[item.id]["qunatity"] = groupedCart[item.id]["quantity"] + 1;
-        groupedCart[item.id]["subTotal"] =
-          groupedCart[item.id]["subTotal"] + discountedPrice;
-        console.log(groupedCart);
-      } else {
-        setCart([...cart, cartItem]);
-      }
-    }
+    const updatedCart = new Map(cart);
 
-    // console.log(itemPresent);
-    console.log("Added to cart! will be implemented later.");
+    if (updatedCart && updatedCart.has(item.id)) {
+      const existingItem = updatedCart.get(item.id);
+
+      existingItem["quantity"] += 1;
+      existingItem["subTotal"] += Number(discountedPrice);
+      updatedCart.set(item.id, existingItem);
+    } else {
+      const cartItem = {
+        item: item,
+        quantity: 1,
+        subTotal: Number(discountedPrice),
+      };
+      updatedCart.set(item.id, cartItem);
+    }
+    toast("Item added to cart!", { icon: <BaggageClaim /> });
+    setCart(updatedCart);
   };
 
   return (

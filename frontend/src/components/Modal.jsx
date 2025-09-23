@@ -42,7 +42,7 @@ const Modal = ({
         className={`
           bg-white rounded-lg
           w-[90%] md:w-[70%] xl:w-[60%]
-          flex flex-col  max-h-[80vh]
+          flex flex-col  max-h-[85vh]
           transform transition-all duration-200
         `}
       >
