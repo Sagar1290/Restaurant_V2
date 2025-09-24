@@ -1,7 +1,8 @@
 import { useContext } from "react";
 import { CartContext } from "../../Contexts";
 import CartItemList from "./CartItemList";
-import { CreditCard, Trash } from "lucide-react";
+import { CreditCard, ShoppingCart, Trash } from "lucide-react";
+import toast from "react-hot-toast";
 
 const FullCart = () => {
   const { cart, setCart } = useContext(CartContext);
@@ -64,7 +65,7 @@ const FullCart = () => {
             </div>
           </div>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-3 justify-center items-center">
           <button
             className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-3 text-base flex-1 flex items-center justify-center space-x-2"
             onClick={handleClearCart}

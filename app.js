@@ -5,6 +5,7 @@ import cors from "cors";
 import { loginRouter } from "./routes/loginRoutes.js";
 import { profileRouter } from "./routes/profileRoutes.js";
 import { menuRouter } from "./routes/menuRoutes.js";
+import { orderRouter } from "./routes/orderRoutes.js";
 
 // import { setupDatabase } from './database.js'
 
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 app.use("/login", loginRouter);
 app.use("/proflie", profileRouter);
 app.use("/menu", menuRouter);
+app.use("/order", orderRouter)
 
 app.listen(port, () => {
   console.log(`Restaurant app listening on port ${port}`);

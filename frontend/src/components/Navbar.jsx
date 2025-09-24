@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext, CartContext } from "../Contexts.jsx";
 import Modal from "./Modal.jsx";
 import CartModal from "./cart/CartModal.jsx";
+import toast from "react-hot-toast";
 
 export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
@@ -34,35 +35,37 @@ export default function Navbar() {
             >
               Home
             </div>
-            <a
+            <div
               onClick={() => navigate("/menu")}
               className="text-gray-700 hover:text-blue-500 text-md font-medium transition cursor-pointer"
             >
               Menu
-            </a>
-            <a
+            </div>
+            <div
               onClick={() => navigate("/about-us")}
               className="text-gray-700 hover:text-blue-500 text-md font-medium transition cursor-pointer"
             >
               About
-            </a>
-            <a
+            </div>
+            <div
               onClick={() => navigate("/")}
               className="text-gray-700 hover:text-blue-500 text-md font-medium transition cursor-pointer"
             >
               Contact
-            </a>
-            <button
-              className="relative p-2 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md transition-colors duration-200 cursor-pointer"
-              onClick={() => setIsCartModalOpen(true)}
-            >
-              <div className="w-6 h-6 flex items-center justify-center">
-                <ShoppingCart />
-              </div>
-              <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-                {cart?.size}
-              </span>
-            </button>
+            </div>
+            {user && (
+              <button
+                className="relative p-2 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md transition-colors duration-200 cursor-pointer"
+                onClick={() => setIsCartModalOpen(true)}
+              >
+                <div className="w-6 h-6 flex items-center justify-center">
+                  <ShoppingCart />
+                </div>
+                <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                  {cart?.size}
+                </span>
+              </button>
+            )}
             {user?.email ? (
               <a
                 onClick={() => navigate("/userProfile")}
@@ -81,14 +84,32 @@ export default function Navbar() {
             {user && (
               <button
                 className="text-gray-700 hover:text-red-500 text-md font-medium transition cursor-pointer"
-                onClick={logout}
+                onClick={() => {
+                  toast.success("Cart cleared!");
+                  setCart(new Map());
+                  toast.success("Logout successful!");
+                  logout();
+                }}
               >
                 <Power />
               </button>
             )}
           </div>
 
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center space-x-4">
+            {user && (
+              <button
+                className="relative p-2 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md transition-colors duration-200 cursor-pointer"
+                onClick={() => setIsCartModalOpen(true)}
+              >
+                <div className="w-6 h-6 flex items-center justify-center">
+                  <ShoppingCart />
+                </div>
+                <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                  {cart?.size}
+                </span>
+              </button>
+            )}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-700 hover:text-amber-600 focus:outline-none"
@@ -100,29 +121,63 @@ export default function Navbar() {
       </div>
 
       {isOpen && (
-        <div className="md:hidden bg-white shadow-lg px-4 pb-4 space-y-2">
-          <a href="#home" className="block text-gray-700 hover:text-amber-600">
+        <div className="md:hidden bg-white shadow-lg px-12 pb-4 space-y-2">
+          <div
+            onClick={() => navigate("/")}
+            className="block text-gray-700 hover:text-amber-600 px-2"
+          >
             Home
-          </a>
-          <a href="#menu" className="block text-gray-700 hover:text-amber-600">
+          </div>
+          <div
+            onClick={() => navigate("/menu")}
+            className="block text-gray-700 hover:text-amber-600 px-2"
+          >
             Menu
-          </a>
-          <a href="#about" className="block text-gray-700 hover:text-amber-600">
+          </div>
+          <div
+            onClick={() => navigate("/about-us")}
+            className="block text-gray-700 hover:text-amber-600 px-2"
+          >
             About
-          </a>
-          <a
-            href="#contact"
-            className="block text-gray-700 hover:text-amber-600"
+          </div>
+          <div
+            onClick={() => navigate("/")}
+            className="block text-gray-700 hover:text-amber-600 px-2"
           >
             Contact
-          </a>
-          <a
-            href="/login"
-            className="block px-3 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
-            onClick={() => setMobileOpen(false)}
-          >
-            Login
-          </a>
+          </div>
+
+          {user?.email ? (
+            <div
+              onClick={() => navigate("/userProfile")}
+              className="block px-3 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition text-center"
+            >
+              {user.fullname || user.email.split("@")[0]}
+            </div>
+          ) : (
+            <div
+              onClick={() => navigate("/login")}
+              className="block px-3 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition text-center"
+            >
+              Login
+            </div>
+          )}
+          {user && (
+            <button
+              className="flex px-3 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition justify-center items-center gap-4 w-full"
+              onClick={() => {
+                toast.success("Cart cleared!");
+                setCart(new Map());
+                toast.success("Logout successful!");
+                logout();
+              }}
+            >
+              <div className="w-4 h-4 flex items-center justify-center">
+                <Power />
+              </div>
+              Log Out
+            </button>
+          )}
         </div>
       )}
       {isCartModalOpen && (

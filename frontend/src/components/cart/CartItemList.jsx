@@ -79,11 +79,11 @@ const CartItemList = () => {
         return (
           <div
             key={itemID}
-            className="flex items-center space-x-4 bg-gray-50 rounded-lg p-4 mb-2"
+            className="flex flex-col md:flex-row items-center space-y-4 md:space-x-4 bg-gray-50 rounded-lg p-4 mb-2"
           >
             <img
               alt={name}
-              className="w-16 h-16 rounded-lg object-cover object-top flex-shrink-0"
+              className="w-full md:w-16 h-32 md:h-16 rounded-lg object-cover object-top flex-shrink-0"
               src={image_url}
             />
             <div className="flex-1">

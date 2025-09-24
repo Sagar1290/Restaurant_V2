@@ -1,18 +1,12 @@
-import {
-  Leaf,
-  AlertTriangle,
-  Plus,
-  ShoppingBag,
-  BaggageClaim,
-} from "lucide-react";
+import { Leaf, AlertTriangle, Plus, BaggageClaim } from "lucide-react";
 import { useContext } from "react";
-import { CartContext } from "../../Contexts";
+import { AuthContext, CartContext } from "../../Contexts";
 import _ from "lodash";
 import toast from "react-hot-toast";
 
 export default function MenuItemCard({ item, onSelect }) {
   const { cart, setCart } = useContext(CartContext);
-  // const cartT = new Map();
+  const { user } = useContext(AuthContext);
   const {
     name,
     category,
@@ -32,6 +26,10 @@ export default function MenuItemCard({ item, onSelect }) {
     : price;
 
   const onAddToCart = (item) => {
+    if (!user) {
+      toast.error("Please login to add in cart!");
+      return;
+    }
     const updatedCart = new Map(cart);
 
     if (updatedCart && updatedCart.has(item.id)) {
@@ -61,7 +59,7 @@ export default function MenuItemCard({ item, onSelect }) {
     >
       <div className="relative">
         <img
-          src={image_url}
+          src={image_url ? image_url : null}
           alt={name}
           className="w-full h-48 object-cover object-top"
         />
@@ -77,6 +75,12 @@ export default function MenuItemCard({ item, onSelect }) {
         {hasDiscount && (
           <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded">
             {discount}% OFF
+          </div>
+        )}
+
+        {cart.get(item.id)?.quantity && (
+          <div className="absolute top-[80%] right-2 bg-red-500 text-white text-xs font-semibold rounded-full py-1 px-2">
+            {cart.get(item.id)?.quantity} items in cart
           </div>
         )}
       </div>
@@ -116,7 +120,7 @@ export default function MenuItemCard({ item, onSelect }) {
         )}
       </div>
 
-      <div className="absolute right-3 bottom-3">
+      <div className="absolute right-3 bottom-3 flex">
         <button
           disabled={!available}
           className={`font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white shadow-lg hover:shadow-xl px-4 py-2 text-sm flex items-center space-x-2 ${

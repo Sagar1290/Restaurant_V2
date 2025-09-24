@@ -56,7 +56,7 @@ export default function Menu() {
         </div>
       </div>
       <div className="mt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-row justify-center mb-8 bg-gray-100 rounded-full p-2 max-w-4xl mx-auto">
+        <div className="flex flex-row flex-wrap justify-center mb-8 bg-gray-100 rounded-full p-2 max-w-4xl mx-auto">
           {categories.map((cat) => (
             <div
               key={cat.name}

@@ -57,7 +57,7 @@ const EmptyCart = ({ onModalClose }) => {
             })}
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 justify-center">
+        <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-3 justify-center items-center">
           <a
             data-discover="true"
             onClick={() => {
@@ -65,7 +65,7 @@ const EmptyCart = ({ onModalClose }) => {
               navigate("/menu");
             }}
           >
-            <button className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white shadow-lg hover:shadow-xl px-6 py-3 text-base flex items-center space-x-2">
+            <button className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white shadow-lg hover:shadow-xl px-6 py-3 text-base flex items-center space-x-2 w-full md:max-w-[300px]">
               <div className="w-4 h-4 flex items-center justify-center">
                 <Menu />
               </div>
@@ -73,7 +73,7 @@ const EmptyCart = ({ onModalClose }) => {
             </button>
           </a>
           <button
-            className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-3 text-base"
+            className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-3 text-base w-full md:max-w-[300px]"
             onClick={onModalClose}
           >
             Continue Browsing
