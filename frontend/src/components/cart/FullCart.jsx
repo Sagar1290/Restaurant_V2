@@ -14,6 +14,33 @@ const FullCart = () => {
     setCart(new Map());
   };
 
+  const handlePayment = async () => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const success = Math.random() > 0.3; // 70% chance of success
+        if (success) {
+          console.log("payment done!");
+          resolve("payment done");
+        } else {
+          console.log("payment failed!");
+          reject("payment failed");
+        }
+      }, 3000);
+    });
+  };
+
+  const handleOrderPlace = async () => {
+    try {
+      const paymentDetails = await handlePayment();
+      console.log(paymentDetails);
+      console.log("order placed after payment");
+      // Place the order here
+    } catch (error) {
+      console.error("Payment failed:", error);
+      // Handle payment failure
+    }
+  };
+
   const subtotal = Array.from(cart.values()).reduce(
     (acc, item) => acc + item.subTotal,
     0
@@ -75,7 +102,10 @@ const FullCart = () => {
             </div>
             <span>Clear Cart</span>
           </button>
-          <button className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white shadow-lg hover:shadow-xl px-6 py-3 text-base flex-2 flex items-center justify-center space-x-2">
+          <button
+            className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white shadow-lg hover:shadow-xl px-6 py-3 text-base flex-2 flex items-center justify-center space-x-2"
+            onClick={handleOrderPlace}
+          >
             <div className="w-4 h-4 flex items-center justify-center">
               <CreditCard />
             </div>
