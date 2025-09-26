@@ -1,30 +1,133 @@
-import express from 'express'
-import { authMiddleWare } from '../middleware.js'
-import { createOrder } from '../api/order.js'
+import express from "express";
+import { adminAuthMiddleWare, authMiddleWare } from "../middleware.js";
+import {
+  createOrder,
+  getUserOrders,
+  getAllOrders,
+  updateOrderStatus,
+  deleteOrder,
+} from "../api/order.js";
 
-export const orderRouter = express.Router()
+export const orderRouter = express.Router();
 
-orderRouter.post('/create-order', authMiddleWare, async (req, res) => {
+orderRouter.get("/orders", authMiddleWare, async (req, res) => {
   try {
-    const { userId, orderType, paymentDetails, cart, cookingRequest } = req.body
+    const userId = req.user_id;
+    const orders = await getUserOrders(userId);
 
-    if (!userId || !orderType || !cart) {
-      return res.status(400).json({ success: false, message: "Invalid order data" })
+    res.json({
+      success: true,
+      orders,
+    });
+  } catch (err) {
+    console.error("Error in /orders:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
+  }
+});
+
+orderRouter.post("/create-order", authMiddleWare, async (req, res) => {
+  try {
+    const { userId, orderType, paymentDetails, cart, cookingRequest } =
+      req.body;
+
+    if (!userId || !orderType || !cart || cart.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid order data" });
     }
 
-    const result = await createOrder(userId, orderType, paymentDetails, cart, cookingRequest)
+    const result = await createOrder(
+      userId,
+      orderType,
+      paymentDetails,
+      cart,
+      cookingRequest
+    );
 
     if (result.success) {
       res.json({
         success: true,
         message: "Order placed successfully!",
-        orderID: result.orderId,   // 👈 match with frontend expectation
-      })
+        orderId: result.orderId,
+      });
     } else {
-      res.status(400).json({ success: false, message: result.message })
+      res.status(400).json({ success: false, message: result.message });
     }
   } catch (err) {
-    console.error("Error in /create-order:", err)
-    res.status(500).json({ success: false, message: "Server error", error: err.message })
+    console.error("Error in /create-order:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
   }
-})
+});
+
+orderRouter.get("/all-orders", adminAuthMiddleWare, async (req, res) => {
+  try {
+    const { status, userId, page = 1, limit = 20 } = req.query;
+    const orders = await getAllOrders({ status, userId, page, limit });
+
+    res.json({
+      success: true,
+      // count: orders.length,
+      orders,
+    });
+  } catch (err) {
+    console.error("Error in /all-orders:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
+  }
+});
+
+orderRouter.post("/update-order", adminAuthMiddleWare, async (req, res) => {
+  try {
+    const { orderId, orderStatus } = req.body;
+
+    if (!orderId || !orderStatus) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid order data" });
+    }
+
+    const result = await updateOrderStatus(orderId, orderStatus);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: "Order status updated!",
+      });
+    } else {
+      res.status(400).json({ success: false, message: result.message });
+    }
+  } catch (err) {
+    console.error("Error in /update-order:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
+  }
+});
+
+orderRouter.delete(
+  "/delete-order/:id",
+  adminAuthMiddleWare,
+  async (req, res) => {
+    try {
+      const orderId = req.params.id;
+
+      const result = await deleteOrder(orderId);
+
+      if (result.success) {
+        res.json({ success: true, message: "Order deleted successfully!" });
+      } else {
+        res.status(400).json({ success: false, message: result.message });
+      }
+    } catch (err) {
+      console.error("Error in /delete-order:", err);
+      res
+        .status(500)
+        .json({ success: false, message: "Server error", error: err.message });
+    }
+  }
+);

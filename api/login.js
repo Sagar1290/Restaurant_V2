@@ -13,6 +13,7 @@ export async function loginUser(email, password) {
       const { password, ...userDetail } = user
       const JWT_SECRET = process.env.JWT_SECRET;
       const jwt_payload = {
+        id: user.id,
         email: user.email,
         fullname: user.fullname,
         role: user.user_role,
@@ -105,9 +106,10 @@ export async function verifyOtp(email, otp) {
 
     const JWT_SECRET = process.env.JWT_SECRET;
     const jwt_payload = {
+      id: userResult.id,
       email: userResult.email,
       fullname: userResult.fullname,
-      role: user.user_role,
+      role: userResult.user_role,
     };
     const token = jwt.sign(jwt_payload, JWT_SECRET);
 
