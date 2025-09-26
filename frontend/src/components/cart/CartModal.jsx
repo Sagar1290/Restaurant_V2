@@ -8,7 +8,7 @@ const CartModal = ({ onModalClose }) => {
   return cart && cart.size == 0 ? (
     <EmptyCart onModalClose={onModalClose} />
   ) : (
-    <FullCart />
+    <FullCart onModalClose={onModalClose} />
   );
 };
 

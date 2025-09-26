@@ -1,11 +1,17 @@
-import { useContext } from "react";
-import { CartContext } from "../../Contexts";
+import { useContext, useState } from "react";
+import { AuthContext, CartContext } from "../../Contexts";
 import CartItemList from "./CartItemList";
 import { CreditCard, ShoppingCart, Trash } from "lucide-react";
 import toast from "react-hot-toast";
+import _, { uniqueId } from "lodash";
 
-const FullCart = () => {
+const API_BASE = "http://localhost:3000";
+
+const FullCart = ({ onModalClose }) => {
+  const { user } = useContext(AuthContext);
   const { cart, setCart } = useContext(CartContext);
+  const [loading, setLoading] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState(null);
 
   const handleClearCart = () => {
     toast("Cart cleared", {
@@ -14,30 +20,87 @@ const FullCart = () => {
     setCart(new Map());
   };
 
-  const handlePayment = async () => {
+  const handlePayment = async (amount) => {
     return new Promise((resolve, reject) => {
+      setLoadingStatus("Connecting to payment gateway...");
       setTimeout(() => {
-        const success = Math.random() > 0.3; // 70% chance of success
-        if (success) {
-          console.log("payment done!");
-          resolve("payment done");
-        } else {
-          console.log("payment failed!");
-          reject("payment failed");
-        }
-      }, 3000);
+        setLoadingStatus("Processing payment...");
+        setTimeout(() => {
+          const success = Math.random() > 0.1;
+          if (success) {
+            const paymentResponse = {
+              paymentMethod: "Online",
+              refID:
+                "REF-" +
+                Math.random().toString(36).substring(2, 10).toUpperCase(),
+              transactionID: "TXN-" + Date.now(),
+              amount: amount,
+              status: "successful",
+            };
+            setLoadingStatus("Payment successful!");
+            resolve(paymentResponse);
+          } else {
+            reject({
+              status: "failed",
+              message: "Payment gateway error. Please try again.",
+            });
+          }
+        }, 2000);
+      }, 1500);
     });
   };
 
-  const handleOrderPlace = async () => {
+  const handleOrderPlace = async (totalAmount) => {
     try {
-      const paymentDetails = await handlePayment();
-      console.log(paymentDetails);
-      console.log("order placed after payment");
-      // Place the order here
+      setLoading(true);
+      setLoadingStatus("Initializing payment...");
+
+      const paymentDetails = await handlePayment(totalAmount);
+      setLoadingStatus("Placing order...");
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        setLoadingStatus("User not authenticated.");
+        toast.error("Please login to proceed!");
+        return;
+      }
+      const cartObj = Object.fromEntries(cart);
+
+      const response = await fetch(`${API_BASE}/order/create-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          userId: user?.id,
+          cart: cartObj,
+          orderType: "online",
+          paymentDetails: paymentDetails,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to place order");
+      }
+
+      const res = await response.json();
+      const orderID = res?.orderID;
+
+      setLoadingStatus("Order placed successfully!");
+      toast.success(`Order #${orderID} placed successfully!`);
+      console.log("Order placed:", { orderID, paymentDetails });
+      setCart(new Map());
+      setLoading(false);
+      onModalClose();
     } catch (error) {
-      console.error("Payment failed:", error);
-      // Handle payment failure
+      console.error("Order placement error:", error);
+      setLoadingStatus(
+        error.message || "Something went wrong during order placement."
+      );
+      toast.error(error.message || "Order failed. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -104,13 +167,20 @@ const FullCart = () => {
           </button>
           <button
             className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white shadow-lg hover:shadow-xl px-6 py-3 text-base flex-2 flex items-center justify-center space-x-2"
-            onClick={handleOrderPlace}
+            onClick={() => handleOrderPlace(total)}
           >
             <div className="w-4 h-4 flex items-center justify-center">
               <CreditCard />
             </div>
-            <span>Checkout ₹{total.toFixed(2)}</span>
+            {loading ? (
+              <span>Placing Order</span>
+            ) : (
+              <span>Checkout ₹{total.toFixed(2)}</span>
+            )}
           </button>
+        </div>
+        <div className="w-full flex justify-end">
+          {loadingStatus && <span className="text-right">{loadingStatus}</span>}
         </div>
       </div>
     </div>
