@@ -7,8 +7,6 @@ import { profileRouter } from "./routes/profileRoutes.js";
 import { menuRouter } from "./routes/menuRoutes.js";
 import { orderRouter } from "./routes/orderRoutes.js";
 
-// import { setupDatabase } from './database.js'
-
 dotenv.config();
 
 const app = express();
@@ -17,11 +15,6 @@ const port = 3000;
 app.use(express.static("./frontend/dist"));
 app.use(express.json());
 app.use(cors());
-
-// setupDatabase().catch(err => {
-//   console.error("Database setup failed:", err);
-// });
-
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });

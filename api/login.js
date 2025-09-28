@@ -1,24 +1,25 @@
-import { initDatabase } from "../database.js";
+import { query } from "../database.js";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 
+// ------------------ LOGIN WITH PASSWORD ------------------
 export async function loginUser(email, password) {
   try {
-    const db = await initDatabase();
-    const query = "SELECT * FROM UserDetails WHERE email = ? AND password = ?";
-    const user = await db.get(query, [email, password]);
-    await db.close();
+    const sql = "SELECT * FROM user_details WHERE email = $1 AND password = $2";
+    const { rows } = await query(sql, [email, password]);
 
-    if (user) {
-      const { password, ...userDetail } = user
-      const JWT_SECRET = process.env.JWT_SECRET;
+    if (rows.length > 0) {
+      const user = rows[0];
+      const { password, ...userDetail } = user;
+
       const jwt_payload = {
         id: user.id,
         email: user.email,
         fullname: user.fullname,
         role: user.user_role,
       };
-      const token = jwt.sign(jwt_payload, JWT_SECRET);
+
+      const token = jwt.sign(jwt_payload, process.env.JWT_SECRET);
       return { success: true, user: userDetail, token };
     } else {
       return { success: false, message: "Invalid credentials" };
@@ -29,17 +30,15 @@ export async function loginUser(email, password) {
   }
 }
 
+// ------------------ LOGIN WITH OTP ------------------
 export async function otpLogin(email) {
   try {
-    const db = await initDatabase();
     const random_otp = Math.floor(1000 + Math.random() * 9000).toString();
+    const expireAt = new Date(Date.now() + 5 * 60 * 1000);
 
-    const expireAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
-    await db.run(
-      `INSERT INTO UserOTP (email, otp, expireAt) VALUES (?, ?, ?)`,
-      [email, random_otp, expireAt]
-    );
-    await db.close();
+    const insertSql =
+      "INSERT INTO user_otp (email, otp, expire_at) VALUES ($1, $2, $3)";
+    await query(insertSql, [email, random_otp, expireAt]);
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -64,25 +63,26 @@ export async function otpLogin(email) {
   }
 }
 
+// ------------------ VERIFY OTP ------------------
 export async function verifyOtp(email, otp) {
   try {
-    const db = await initDatabase();
+    const selectSql = `
+      SELECT * FROM user_otp 
+      WHERE email = $1 AND otp = $2 
+      ORDER BY id DESC 
+      LIMIT 1
+    `;
+    const { rows } = await query(selectSql, [email, otp]);
 
-    const record = await db.get(
-      `SELECT * FROM UserOTP WHERE email = ? AND otp = ? ORDER BY id DESC LIMIT 1`,
-      [email, otp]
-    );
-
-    if (!record) {
-      await db.close();
+    if (rows.length === 0) {
       return { success: false, message: "Invalid OTP" };
     }
 
+    const record = rows[0];
     const now = new Date();
-    const expiry = new Date(record.expireAt);
-
-    if (now > expiry) {
-      await db.close();
+    const expiry = new Date(record.expire_at);
+    console.log(now.toISOString(), expiry.toISOString())
+    if (now.toISOString() > expiry.toISOString()) {
       return { success: false, message: "OTP expired" };
     }
 
@@ -90,53 +90,52 @@ export async function verifyOtp(email, otp) {
       Math.random() * 100
     ).toFixed(0)}`;
 
-    await db.run(
-      `INSERT OR IGNORE INTO UserDetails (email, profile_photo)
-         VALUES (?, ?)`,
-      [email, profile_photo]
-    );
+    const insertUserSql = `
+      INSERT INTO user_details (email, profile_photo)
+      VALUES ($1, $2)
+      ON CONFLICT (email) DO NOTHING
+    `;
+    await query(insertUserSql, [email, profile_photo]);
 
-    const userResult = await db.get(
-      "SELECT * FROM UserDetails WHERE email = ?",
+    const userResult = await query(
+      "SELECT * FROM user_details WHERE email = $1",
       [email]
     );
-    await db.close();
 
-    const { password, ...userDetail } = userResult
+    const user = userResult.rows[0];
+    const { password, ...userDetail } = user;
 
-    const JWT_SECRET = process.env.JWT_SECRET;
     const jwt_payload = {
-      id: userResult.id,
-      email: userResult.email,
-      fullname: userResult.fullname,
-      role: userResult.user_role,
+      id: user.id,
+      email: user.email,
+      fullname: user.fullname,
+      role: user.user_role,
     };
-    const token = jwt.sign(jwt_payload, JWT_SECRET);
+
+    const token = jwt.sign(jwt_payload, process.env.JWT_SECRET);
 
     return { success: true, user: userDetail, token };
   } catch (error) {
-    console.log(error);
+    console.error("Verify OTP error:", error);
     return { success: false, message: "Server Error" };
   }
 }
 
+// ------------------ GET USER ------------------
 export async function getUser(user_email) {
   try {
-    const db = await initDatabase();
-
-    const userResult = await db.get(
-      "SELECT * FROM UserDetails WHERE email = ?",
+    const { rows } = await query(
+      "SELECT * FROM user_details WHERE email = $1",
       [user_email]
     );
-    await db.close();
 
-    if (!userResult) {
+    if (rows.length === 0) {
       return { success: false, message: "No User Found" };
     }
 
-    return { success: true, user: userResult };
+    return { success: true, user: rows[0] };
   } catch (error) {
-    console.log(error);
+    console.error("GetUser error:", error);
     return { success: false, message: "Server Error" };
   }
 }

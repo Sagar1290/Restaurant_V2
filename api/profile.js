@@ -1,36 +1,48 @@
-import { initDatabase } from "../database.js";
+import { query } from "../database.js";
 
 export async function updateProfile(user, email) {
   if (!user) {
-    return { success: false, message: "User Profile details are required!" };
+    return { success: false, message: "User profile details are required!" };
   }
   if (!user.fullname || !user.phone || !user.password || !user.address) {
     return { success: false, message: "All details are required" };
   }
-  if (user.email != email) {
-    return { success: false, message: "Can Only update your profile!" };
+  if (user.email !== email) {
+    return { success: false, message: "Can only update your own profile!" };
   }
 
-  const db = await initDatabase();
-  const currentDate = new Date().toISOString();
-  const insertProfileSQL = `UPDATE UserDetails 
-        SET fullname = ?, password = ?, phone = ?, address = ?, date_of_birth = ?, updatedAt = ?
-        WHERE email = ?
+  try {
+    const updateSQL = `
+      UPDATE user_details
+      SET fullname = $1,
+          password = $2,
+          phone = $3,
+          address = $4,
+          date_of_birth = $5,
+          updated_at = NOW()
+      WHERE email = $6
+      RETURNING id, fullname, email, phone, address, date_of_birth, created_at, updated_at, user_role
     `;
-  await db.run(insertProfileSQL, [
-    user.fullname,
-    user.password,
-    user.phone,
-    user.address,
-    user.date_of_birth,
-    currentDate,
-    email,
-  ]);
 
-  const userResult = await db.get("SELECT * FROM UserDetails WHERE email = ?", [
-    email,
-  ]);
+    const values = [
+      user.fullname,
+      user.password,
+      user.phone,
+      user.address,
+      user.date_of_birth || null,
+      email,
+    ];
 
-  await db.close();
-  return { success: true, user: userResult };
+    const result = await query(updateSQL, values);
+
+    if (result.rowCount === 0) {
+      return { success: false, message: `No user found with email: ${email}` };
+    }
+
+    const updatedUser = result.rows[0];
+    return { success: true, user: updatedUser };
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    return { success: false, message: "Failed to update profile", error: error.message };
+  }
 }
