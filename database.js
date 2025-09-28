@@ -73,13 +73,14 @@ export async function setupDatabase() {
   // --- ORDERS ---
   await db.exec(`
     CREATE TABLE IF NOT EXISTS Orders (
-      order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      order_id TEXT PRIMARY KEY,
       user_id INTEGER NOT NULL,
       order_type TEXT CHECK (order_type IN ('dine-in','online')),
       table_no TEXT,
       payment_method TEXT,
-      transaction_id TEXT, -- ✅ to track payment gateway reference
+      transaction_id TEXT,
       payment_status TEXT CHECK (payment_status IN ('pending','successful','failed','refunded')) DEFAULT 'pending',
+      order_total REAL,
       order_status TEXT CHECK (order_status IN ('pending','accepted','cooking','ready-for-pickup','assigned','in-transit','delivered','cancelled')) DEFAULT 'pending',
       rider_id INTEGER,
       cooking_instruction TEXT,
@@ -94,7 +95,7 @@ export async function setupDatabase() {
   await db.exec(`
     CREATE TABLE IF NOT EXISTS Order_Items (
       order_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      order_id INTEGER NOT NULL,
+      order_id TEXT NOT NULL,
       item_id INTEGER NOT NULL,
       quantity INTEGER NOT NULL,
       price REAL NOT NULL,
@@ -152,22 +153,41 @@ export async function setupDatabase() {
     `);
 
   await db.run(`
-    INSERT INTO Orders (user_id, order_type, payment_method, transaction_id, payment_status, order_status, cooking_instruction)
-    VALUES
-      (1, 'online', 'UPI', 'TXN123456', 'successful', 'cooking', 'Less spicy please'),
-      (2, 'dine-in', 'cash', NULL, 'pending', 'pending', 'Extra cheese on pizza'),
-      (3, 'online', 'Card', 'TXN789012', 'failed', 'cancelled', 'Gluten free base if possible'),
-      (4, 'online', 'Wallet', 'TXN456789', 'successful', 'ready-for-pickup', 'Pack separately'),
-      (5, 'dine-in', 'cash', NULL, 'pending', 'accepted', 'No onions please');
+    INSERT INTO Orders (
+      order_id, user_id, order_type, table_no, payment_method,
+      transaction_id, payment_status, order_total, order_status, rider_id, cooking_instruction
+    ) VALUES
+      ('ORD-092025-001', 1, 'online', NULL, 'UPI', 'TXN123456', 'successful', 410.64, 'cooking', NULL, 'Less spicy please'),
+      ('ORD-092025-002', 2, 'dine-in', 'T5', 'cash', NULL, 'pending', 317, 'accepted', NULL, 'Extra cheese on pizza'),
+      ('ORD-092025-003', 3, 'online', NULL, 'Card', 'TXN789012', 'successful', 135, 'ready-for-pickup', NULL, 'No gluten please'),
+      ('ORD-092025-004', 1, 'online', NULL, 'UPI', 'TXN456111', 'successful', 375.24, 'pending', NULL, 'No spicy food'),
+      ('ORD-092025-005', 1, 'dine-in', 'T2', 'cash', NULL, 'pending', 328, 'cooking', NULL, 'Serve hot'),
+      ('ORD-092025-006', 1, 'online', NULL, 'Card', 'TXN456222', 'successful', 251.84, 'delivered', NULL, 'Extra mint in mojito'),
+      ('ORD-092025-007', 1, 'dine-in', 'T6', 'cash', NULL, 'successful', 270.22, 'delivered', NULL, 'Cheese burst if possible'),
+      ('ORD-092025-008', 1, 'online', NULL, 'Wallet', 'TXN456333', 'successful', 328.82, 'delivered', NULL, ''),
+      ('ORD-092025-009', 1, 'online', NULL, 'UPI', 'TXN456444', 'successful', 339.84, 'delivered', NULL, 'No onions, please');
   `);
 
 
   await db.run(`
-    INSERT INTO Order_Items (order_id, item_id, quantity, price, discount, special_instruction, item_status)
-    VALUES
-      (1, 1, 2, 199, 10, 'No onions', 'cooking'),
-      (1, 3, 1, 149, 5, 'Extra lettuce', 'pending'),
-      (2, 2, 1, 299, 15, 'Extra spicy', 'pending');
+        INSERT INTO Order_Items (
+      order_id, item_id, quantity, price, discount, special_instruction, item_status
+    ) VALUES
+      ('ORD-092025-001', 1, 2, 199, 10, 'No onions', 'cooking'),
+      ('ORD-092025-001', 3, 1, 149, 5, 'Extra lettuce', 'pending'),
+      ('ORD-092025-002', 2, 1, 299, 15, 'Extra spicy', 'pending'),
+      ('ORD-092025-003', 4, 2, 89, 0, '', 'ready'),
+      ('ORD-092025-004', 1, 1, 199, 10, 'Less spicy', 'pending'),
+      ('ORD-092025-004', 5, 2, 119, 0, '', 'pending'),
+      ('ORD-092025-005', 6, 1, 229, 10, 'Extra cheese', 'cooking'),
+      ('ORD-092025-005', 10, 2, 49, 0, '', 'cooking'),
+      ('ORD-092025-006', 22, 1, 89, 0, 'Add extra mint', 'served'),
+      ('ORD-092025-006', 19, 1, 99, 0, '', 'served'),
+      ('ORD-092025-007', 6, 1, 229, 10, 'Cheese burst', 'served'),
+      ('ORD-092025-007', 20, 1, 59, 5, '', 'served'),
+      ('ORD-092025-008', 2, 1, 299, 15, 'Extra masala', 'served');
+      ('ORD-092025-009', 1, 1, 199, 10, 'No onions', 'served'),
+      ('ORD-092025-009', 4, 1, 89, 0, '', 'served'),
   `);
 
   await db.close();

@@ -11,6 +11,7 @@ import Menu from "./pages/Menu";
 import Footer from "./components/Footer";
 import About from "./pages/About";
 import ScrollToTop from "./ScrollToTop";
+import Order from "./pages/Order.jsx";
 
 const API_BASE = "http://localhost:3000";
 
@@ -58,6 +59,14 @@ function App() {
                 />
                 <Route path="/menu" element={<Menu />} />
                 <Route path="/about-us" element={<About />} />
+                <Route
+                  path="/order"
+                  element={
+                    <ProtectedRoute>
+                      <Order />
+                    </ProtectedRoute>
+                  }
+                />
               </Routes>
             </main>
             <Footer />

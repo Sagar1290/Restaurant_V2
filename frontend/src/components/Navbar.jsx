@@ -48,10 +48,10 @@ export default function Navbar() {
               About
             </div>
             <div
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/order")}
               className="text-gray-700 hover:text-blue-500 text-md font-medium transition cursor-pointer"
             >
-              Contact
+              Orders
             </div>
             {user && (
               <button
@@ -141,10 +141,10 @@ export default function Navbar() {
             About
           </div>
           <div
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/order")}
             className="block text-gray-700 hover:text-amber-600 px-2"
           >
-            Contact
+            Orders
           </div>
 
           {user?.email ? (
