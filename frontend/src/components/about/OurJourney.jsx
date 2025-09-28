@@ -1,5 +1,3 @@
-import React from "react";
-
 const milestones = [
   {
     year: "1985",
@@ -45,11 +43,11 @@ const Milestone = ({ year, title, description, isReversed }) => (
       isReversed ? "flex-row-reverse" : "flex-row"
     }`}
   >
-    <div className="w-1/2 pr-8 text-right">
+    <div className="w-1/2  text-right">
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <div className="text-3xl font-bold text-orange-600 mb-2">{year}</div>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
-        <p className="text-gray-600">{description}</p>
+        <p className="text-gray-600 text-sm md:text-base">{description}</p>
       </div>
     </div>
     <div className="relative z-10 w-4 h-4 bg-orange-600 rounded-full border-4 border-white shadow"></div>

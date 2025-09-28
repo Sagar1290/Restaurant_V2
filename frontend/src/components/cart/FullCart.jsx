@@ -5,7 +5,7 @@ import { CreditCard, ShoppingCart, Trash } from "lucide-react";
 import toast from "react-hot-toast";
 import _, { uniqueId } from "lodash";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const FullCart = ({ onModalClose }) => {
   const { user } = useContext(AuthContext);

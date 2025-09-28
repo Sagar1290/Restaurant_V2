@@ -5,7 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../Contexts.jsx";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function Login() {
   const navigate = useNavigate();

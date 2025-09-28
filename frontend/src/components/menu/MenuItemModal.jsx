@@ -4,7 +4,7 @@ import EditMenuItemForm from "./EditMenuItemForm";
 import { AuthContext, MenuContext } from "../../Contexts";
 import toast from "react-hot-toast";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function MenuItemModal({ item, onModalClose }) {
   const { user } = useContext(AuthContext);

@@ -12,7 +12,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { AuthContext } from "../Contexts.jsx";
 import _ from "lodash";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function UserProfile() {
   const { user, setUser } = useContext(AuthContext);

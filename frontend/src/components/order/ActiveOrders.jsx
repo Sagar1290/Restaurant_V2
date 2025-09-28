@@ -1,7 +1,7 @@
 import React, { use, useContext } from "react";
 import { AuthContext } from "../../Contexts";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const ActiveOrders = ({ activeOrders, setActiveOrders }) => {
   const { user } = useContext(AuthContext);

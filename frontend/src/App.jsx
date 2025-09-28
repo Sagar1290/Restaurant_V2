@@ -13,7 +13,7 @@ import About from "./pages/About";
 import ScrollToTop from "./ScrollToTop";
 import Order from "./pages/Order.jsx";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 function App() {
   const [loading, setLoading] = useState(false);
