@@ -86,9 +86,9 @@ export default function MenuItemModal({ item, onModalClose }) {
   return (
     <>
       {!isEditing ? (
-        <div className="p-6">
+        <div className="md:p-6 flex justify-center items-center">
           <div className="space-y-6">
-            <div className="flex items-center space-x-6">
+            <div className="flex flex-col md:flex-row items-center space-y-4 md:space-x-6">
               <img
                 alt={item.name}
                 className="w-52 h-40 object-cover object-top rounded-lg flex-shrink-0"
@@ -125,7 +125,7 @@ export default function MenuItemModal({ item, onModalClose }) {
                 </div>
               </div>
               {user?.user_role == "manager" && (
-                <div className="flex flex-col space-y-2">
+                <div className="flex md:flex-col space-x-2 md:space-x-0 md:space-y-2">
                   <button
                     className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 text-sm flex items-center space-x-1"
                     onClick={() => setIsEditing(true)}

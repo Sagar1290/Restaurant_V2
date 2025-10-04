@@ -51,33 +51,33 @@ const PastOrders = ({ pastOrders }) => {
               key={order.order_id}
               className="bg-white rounded-lg shadow-md p-6"
             >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2 sm:gap-0">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                       Order #{order.order_id}
                     </h3>
-                    <p className="text-gray-600">
+                    <p className="text-gray-500 text-xs sm:text-sm">
                       {new Date(order.createdAt).toLocaleString()}
                     </p>
                   </div>
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium bg-${orderStatusColor}-100 text-${orderStatusColor}-800 capitalize`}
+                    className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-${orderStatusColor}-100 text-${orderStatusColor}-800 capitalize self-start sm:self-auto`}
                   >
                     {order.order_status}
                   </span>
                 </div>
-                <div className="text-right space-y-1">
-                  <p className="text-xl font-bold text-gray-900">
+                <div className="text-left sm:text-right space-y-1">
+                  <p className="text-xl sm:text-xl font-bold text-gray-900">
                     ₹{totalAmount.toFixed(0)}
                   </p>
-                  <p className="text-gray-600">
+                  <p className="text-gray-500 text-xs sm:text-sm">
                     {order.order_type === "dine-in"
                       ? `Table: ${order.table_no}`
                       : "Delivery"}
                   </p>
                   <span
-                    className={`text-sm px-2 py-1 rounded-full bg-${paymentStatusColor}-100 text-${paymentStatusColor}-800 capitalize`}
+                    className={`text-xs sm:text-sm px-2 py-1 rounded-full bg-${paymentStatusColor}-100 text-${paymentStatusColor}-800 capitalize`}
                   >
                     {order.payment_status}
                   </span>

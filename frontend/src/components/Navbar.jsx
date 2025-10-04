@@ -1,6 +1,6 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Menu, Power, ShoppingCart, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext, CartContext } from "../Contexts.jsx";
 import Modal from "./Modal.jsx";
 import CartModal from "./cart/CartModal.jsx";
@@ -12,6 +12,24 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
 
   return (
     <nav className="bg-white shadow-md fixed w-full z-20 top-0 left-0">
@@ -121,7 +139,10 @@ export default function Navbar() {
       </div>
 
       {isOpen && (
-        <div className="md:hidden bg-white shadow-lg px-12 pb-4 space-y-2">
+        <div
+          ref={menuRef}
+          className="md:hidden bg-white shadow-lg px-12 pb-4 space-y-2"
+        >
           <div
             onClick={() => navigate("/")}
             className="block text-gray-700 hover:text-amber-600 px-2"

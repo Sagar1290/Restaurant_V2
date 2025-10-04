@@ -41,7 +41,7 @@ const Modal = ({
       <div
         className={`
           bg-white rounded-lg
-          w-[90%] md:w-[70%] xl:w-[60%]
+          w-full md:w-[70%] xl:w-[60%]
           flex flex-col  max-h-[85vh]
           transform transition-all duration-200
         `}
@@ -54,7 +54,7 @@ const Modal = ({
           <button
             onClick={onModalClose}
             aria-label="Close modal"
-            className="ml-4 text-gray-500 hover:text-gray-700 p-1 rounded"
+            className="ml-4 text-gray-500 hover:text-gray-700 p-1 rounded cursor-pointer"
           >
             <X />
           </button>

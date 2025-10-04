@@ -116,30 +116,30 @@ const ActiveOrders = ({ activeOrders, setActiveOrders }) => {
         return (
           <div
             key={order.order_id}
-            className="bg-white rounded-lg shadow-md border-l-4 border-orange-500 p-6 mb-6"
+            className="bg-white rounded-lg shadow-md border-l-4 border-orange-500 p-2 md:p-6 mb-6"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2 sm:gap-0">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                     Order #{order.order_id}
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-500 text-xs sm:text-sm">
                     {user.user_role == "manager"
-                      ? `${order.fullname ?? order.email}  • `
+                      ? `${order.fullname ?? order.email} • `
                       : ""}
                     {new Date(order.createdAt).toLocaleString()}
                   </p>
                 </div>
-                <span className="px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800 capitalize">
+                <span className="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-orange-100 text-orange-800 capitalize self-start sm:self-auto">
                   {order.order_status}
                 </span>
               </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-gray-900">
+              <div className="text-left sm:text-right">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">
                   ₹{totalPrice.toFixed(0)}
                 </p>
-                <p className="text-gray-600">
+                <p className="text-gray-500 text-xs sm:text-sm">
                   {order.order_type === "dine-in"
                     ? `Table: ${order.table_no}`
                     : "Delivery"}
@@ -233,7 +233,7 @@ const ActiveOrders = ({ activeOrders, setActiveOrders }) => {
 
             {user?.user_role === "manager" && (
               <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col md:flex-row gap-2 items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <label className="text-sm font-medium text-gray-700">
                       Update Status:
@@ -255,7 +255,7 @@ const ActiveOrders = ({ activeOrders, setActiveOrders }) => {
                       <option value="cancelled">Cancelled</option>
                     </select>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="hidden md:flex items-center space-x-2">
                     <button
                       disabled={true}
                       className="font-medium rounded-lg whitespace-nowrap border-2 border-orange-600 text-orange-600 cursor-not-allowed px-4 py-2 text-sm"

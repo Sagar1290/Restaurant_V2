@@ -56,7 +56,7 @@ export default function Menu() {
         </div>
       </div>
       <div className="mt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-row flex-wrap justify-center mb-8 bg-gray-100 rounded-full p-2 max-w-4xl mx-auto">
+        <div className="text-sm flex flex-row flex-wrap md:flex-nowrap justify-center mb-8 bg-gray-100 rounded-full p-2 max-w-4xl mx-auto">
           {categories.map((cat) => (
             <div
               key={cat.name}
@@ -75,7 +75,7 @@ export default function Menu() {
             </div>
           ))}
           {user?.user_role == "manager" && (
-            <button
+            <div
               className="ml-4 flex items-center space-x-2 px-6 py-3 bg-green-600 text-white rounded-full font-medium transition-all duration-200 cursor-pointer whitespace-nowrap hover:bg-green-700"
               onClick={() => setIsAddNewItemModalOpen(true)}
             >
@@ -83,7 +83,7 @@ export default function Menu() {
                 <Plus />
               </div>
               <span>Add Menu Item</span>
-            </button>
+            </div>
           )}
         </div>
 

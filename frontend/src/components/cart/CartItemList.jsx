@@ -79,59 +79,58 @@ const CartItemList = () => {
         return (
           <div
             key={itemID}
-            className="flex flex-col md:flex-row items-center space-y-4 md:space-x-4 bg-gray-50 rounded-lg p-4 mb-2"
+            className="flex flex-col sm:flex-row items-center sm:items-start space-y-3 sm:space-y-0 sm:space-x-4 bg-gray-50 rounded-lg p-3 sm:p-4 mb-2"
           >
             <img
               alt={name}
-              className="w-full md:w-16 h-32 md:h-16 rounded-lg object-cover object-top flex-shrink-0"
+              className="w-full sm:w-16 h-28 sm:h-16 rounded-lg object-cover object-top flex-shrink-0"
               src={image_url}
             />
-            <div className="flex-1">
-              <div className="flex items-center space-x-2 mb-1">
-                <h3 className="font-medium text-gray-900">{name}</h3>
+            <div className="flex-1 w-full">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 mb-1">
+                <h3 className="font-medium text-gray-900 text-base sm:text-lg">
+                  {name}
+                </h3>
                 {is_veg && (
-                  <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                  <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mt-1 sm:mt-0">
                     <div className="w-3 h-3 flex items-center justify-center">
                       <Leaf className="text-white text-xs" />
                     </div>
                   </div>
                 )}
               </div>
-
-              <span className="text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
+              <span className="text-xs sm:text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
                 {category || "Item"}
               </span>
-
-              <div className="flex items-center justify-between mt-2">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-2">
                 <div className="flex items-center space-x-2">
-                  <span className="text-lg font-semibold text-orange-600">
+                  <span className="text-base sm:text-lg font-semibold text-orange-600">
                     ₹{discountedPrice.toFixed(2)}
                   </span>
                   {discount > 0 && (
-                    <span className="text-sm text-gray-400 line-through">
+                    <span className="text-xs sm:text-sm text-gray-400 line-through">
                       ₹{price.toFixed(2)}
                     </span>
                   )}
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 mt-2 sm:mt-0">
                   <button
-                    className="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-full hover:bg-gray-50 cursor-pointer"
+                    className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-white border border-gray-300 rounded-full hover:bg-gray-50 cursor-pointer"
                     onClick={() => handleRemoveItem(itemID)}
                   >
                     <Minus className="text-gray-600 text-xs" />
                   </button>
-                  <span className="w-8 text-center font-medium">
+                  <span className="w-7 sm:w-8 text-center font-medium text-sm sm:text-base">
                     {quantity}
                   </span>
                   <button
-                    className="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-full hover:bg-gray-50 cursor-pointer"
+                    className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-white border border-gray-300 rounded-full hover:bg-gray-50 cursor-pointer"
                     onClick={() => handleAddItem(itemID)}
                   >
                     <Plus className="text-xs text-gray-600" />
                   </button>
                 </div>
               </div>
-
               <div className="flex items-center justify-between mt-2">
                 <span className="text-sm font-medium text-gray-900">
                   Subtotal: ₹{subTotal.toFixed(2)}

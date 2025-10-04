@@ -180,25 +180,25 @@ export default function EditMenuItemForm({ item, onCancel, onSubmit }) {
         </form>
       </div>
 
-      <div className="sticky -bottom-6 bg-gray-50 border-t border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="md:font-medium sticky -bottom-6 bg-gray-50 border-t border-gray-200 md:px-6 md:py-4 flex items-center justify-between">
         <div>
           <button
             type="button"
             onClick={onCancel}
-            className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-3 text-base flex items-center space-x-1"
+            className=" rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-3 text-base flex items-center space-x-1"
           >
-            <div className="w-4 h-4 flex items-center justify-center">
+            <div className=" flex items-center justify-center">
               <ArrowLeft />
             </div>
-            <span>Back to View</span>
+            <span className="hidden md:block">Back to View</span>
           </button>
         </div>
-        <div className="flex items-center space-x-3">
+        <div>
           <button
             type="submit"
             disabled={saving}
             onClick={handleSubmit}
-            className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white shadow-lg hover:shadow-xl px-6 py-3 text-base"
+            className=" rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white shadow-lg hover:shadow-xl px-6 py-3 text-base"
           >
             {saving ? "Saving Changes" : "Save Changes"}
           </button>

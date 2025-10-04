@@ -85,7 +85,7 @@ export default function MenuItemCard({ item, onSelect }) {
         )}
       </div>
 
-      <div className="p-6">
+      <div className="p-6 mb-4">
         <div className="flex justify-between items-start mb-3">
           <div>
             <h3 className="text-xl font-semibold text-gray-900">{name}</h3>

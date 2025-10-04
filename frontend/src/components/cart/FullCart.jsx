@@ -116,13 +116,15 @@ const FullCart = ({ onModalClose }) => {
   const amountToFreeDelivery = 300 - subtotal;
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="p-6">
-        <div className="space-y-4 mb-6">
+      <div className="p-3 sm:p-6">
+        <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
           <CartItemList />
         </div>
-        <div className="bg-orange-50 rounded-lg p-4 mb-6">
-          <h3 className="font-semibold text-gray-900 mb-3">Order Summary</h3>
-          <div className="space-y-2 text-sm">
+        <div className="bg-orange-50 rounded-md sm:rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+          <h3 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-base sm:text-lg">
+            Order Summary
+          </h3>
+          <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
             <div className="flex justify-between">
               <span className="text-gray-600">Subtotal:</span>
               <span className="text-gray-900">₹{subtotal.toFixed(2)}</span>
@@ -139,37 +141,35 @@ const FullCart = ({ onModalClose }) => {
                 <span className="text-green-600">FREE</span>
               )}
             </div>
-
             {deliveryFee > 0 && amountToFreeDelivery > 0 && (
               <div className="text-xs text-orange-600 mt-1">
                 Add ₹{amountToFreeDelivery.toFixed(2)} more to get{" "}
                 <strong>FREE delivery</strong>!
               </div>
             )}
-
             <div className="border-t border-orange-200 pt-2 mt-2">
-              <div className="flex justify-between font-semibold text-lg">
+              <div className="flex justify-between font-semibold text-base sm:text-lg">
                 <span className="text-gray-900">Total:</span>
                 <span className="text-orange-600">₹{total.toFixed(2)}</span>
               </div>
             </div>
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-3 justify-center items-center">
+        <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-3 justify-center items-stretch">
           <button
-            className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-3 text-base flex-1 flex items-center justify-center space-x-2"
+            className="font-medium rounded-md sm:rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base flex-1 flex items-center justify-center space-x-2"
             onClick={handleClearCart}
           >
-            <div className="w-4 h-4 flex items-center justify-center">
+            <div className="w-5 h-5 flex items-center justify-center">
               <Trash />
             </div>
             <span>Clear Cart</span>
           </button>
           <button
-            className="font-medium rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white shadow-lg hover:shadow-xl px-6 py-3 text-base flex-2 flex items-center justify-center space-x-2"
+            className="font-medium rounded-md sm:rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white shadow-md hover:shadow-lg px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base flex-1 flex items-center justify-center space-x-2"
             onClick={() => handleOrderPlace(total)}
           >
-            <div className="w-4 h-4 flex items-center justify-center">
+            <div className="w-5 h-5 flex items-center justify-center">
               <CreditCard />
             </div>
             {loading ? (
@@ -179,8 +179,12 @@ const FullCart = ({ onModalClose }) => {
             )}
           </button>
         </div>
-        <div className="w-full flex justify-end">
-          {loadingStatus && <span className="text-right">{loadingStatus}</span>}
+        <div className="w-full flex justify-end mt-2">
+          {loadingStatus && (
+            <span className="text-right text-xs sm:text-sm">
+              {loadingStatus}
+            </span>
+          )}
         </div>
       </div>
     </div>
