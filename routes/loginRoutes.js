@@ -1,5 +1,5 @@
 import express from "express";
-import { authMiddleWare } from "../middleware.js";
+import { authMiddleWare } from "../authMiddleware.js";
 import { getUser, loginUser, otpLogin, verifyOtp } from "../api/login.js";
 
 export const loginRouter = express.Router();

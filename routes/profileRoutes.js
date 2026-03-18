@@ -1,5 +1,5 @@
 import express from "express";
-import { authMiddleWare } from "../middleware.js";
+import { authMiddleWare } from "../authMiddleware.js";
 import { updateProfile } from "../api/profile.js";
 
 export const profileRouter = express.Router();

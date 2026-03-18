@@ -1,5 +1,5 @@
 import express from "express";
-import { adminAuthMiddleWare, authMiddleWare } from "../middleware.js";
+import { adminAuthMiddleWare, authMiddleWare } from "../authMiddleware.js";
 import {
   createOrder,
   getUserOrders,

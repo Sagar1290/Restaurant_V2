@@ -6,7 +6,7 @@ import {
   getMenuItem,
   updateMenuItem,
 } from "../api/menu.js";
-import { adminAuthMiddleWare } from "../middleware.js";
+import { adminAuthMiddleWare } from "../authMiddleware.js";
 
 const menuRouter = express.Router();
 
