@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/login", loginRouter);
-app.use("/proflie", profileRouter);
+app.use("/profile", profileRouter);
 app.use("/menu", menuRouter);
 app.use("/order", orderRouter)
 
@@ -31,6 +31,8 @@ app.get(/.*/, (req, res) => {
 });
 
 
-app.listen(port, () => {
-  console.log(`Restaurant app listening on port ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Restaurant app listening on port ${port}`);
+// });
+
+export default app;
