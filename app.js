@@ -17,7 +17,6 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(express.static("./frontend/dist"));
 app.use(express.json());
 app.use(cors());
 
@@ -26,6 +25,7 @@ app.use("/profile", profileRouter);
 app.use("/menu", menuRouter);
 app.use("/order", orderRouter)
 
+app.use(express.static(path.join(__dirname, "frontend", "dist")));
 app.get(/.*/, (req, res) => {
   res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
 });
